@@ -1,0 +1,397 @@
+# Web-appendix-MSM-with-SC
+* Web appendix
+
+This is the web appendix to our manuscript entitled /Marginal structural models with monotonicity constraints: a case
+study in out-of-hospital cardiac arrest patients/. \\
+
+We are motivated by a recent study
+that examines the effect of ambulance response time on 30-day survival
+probability in out-of-hospital cardiac arrest (OHCA) patients if
+either all patients had received or none of the patients had received
+bystander cardiopulmonary resuscitation (CPR).\\
+
+It is natural to assume
+that the 30-day survival chances for both cases - if all OHCA patients
+had received or none of the OHCA patients had received bystander CPR -
+do not increase when the ambulance response time increases.
+
+In our manuscript we propose an estimation procedure that estimates
+that uses a marginal structural model (MSM) with shape constraints to
+that respects the monotone relationship of the outcome (30-day
+survival) and the continuous covariate of interest (ambulance response
+time).\\
+
+In this web appendix we provide =R= code for the simulation study
+presented in the manuscript.
+
+*Note:* To run any of the code chunks below you need to load the
+following =R= packages:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results none :exports code  :session *R* :cache yes
+library(scam)
+library(lava)
+library(data.table)
+library(rms)
+library(parallel)
+library(prodlim)
+#+END_SRC
+
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results none :exports none  :session *R* :cache yes
+setwd("~/Dropbox/PhD final/MSIII/Simulations/")
+#+END_SRC
+
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results none :exports none  :session *R* :cache yes
+path.to.file <- "~/Dropbox/PhD final/MSIII/Simulations"
+#+END_SRC
+
+** Data generating mechanism
+
+To generate the data for simulation study, we need to load the following =R= script:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results none :exports code  :session *R* :cache yes
+source("./R/generate_data.R")
+#+END_SRC
+
+To create a simulated data for setting 1, we can run the following code:
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports both :results output  :session *R* :cache yes
+## Set effect size for data generation
+gamma <- c(0,0,0)
+alpha <- c(1.5,0.1,-0.03)
+beta <- c(2,1.3,-0.9,0.2,-0.04)
+## Generate data (with fixed seed)
+set.seed(17)
+n <- 500
+d1 <- generate_data(n=n,alpha=alpha,beta=beta,gamma=gamma,unif=FALSE)
+head(d1)
+#+END_SRC
+
+#+RESULTS[<2022-05-08 18:14:42> 9d390fcf42ff56a22bf7a4ae7531cb6f427a9cf3]:
+:   C1       C2          Z A A0 A1 set.Y0 set.Y1        m0 Y
+: 1  1 68.89249  2.8292071 0  0  1      0      0 1.3426577 0
+: 2  1 64.52226  5.1811659 0  0  1      0      0 1.8215069 0
+: 3  1 64.57243 11.7335715 0  0  1      0      0 2.5442419 0
+: 4  1 68.26281  8.4890214 1  0  1      0      0 2.2501355 0
+: 5  1 66.24554  8.8481369 0  0  1      0      1 2.2872823 0
+: 6  0 66.49033  0.8152458 1  0  1      0      1 0.5962209 1
+
+
+
+We simulate a covariate sex (=C1=) from a Bernoulli distribution, a covariate age (=C2=)
+from a Gaussian distribution and a continuous covariate ambulance
+response time (=Z=). By setting the argument =unif=FALSE= will draw
+the ambulance response time from a Gamma distribution. Thereby, the effect of sex and
+age on ambulance response time is specified by the argument
+=gamma=. Note that by setting =gamma <- c(0,0,0)= we assume ambulance response time is independent of sex and age.\\
+
+A binary observed bystander CPR status (=A=) is drawn following a logistic
+regression model with additive effects of age and sex as specified by
+the argument =alpha=.\\
+
+Another logistic
+regression model is used to draw the outcome of 30-day survival. The covariate effects on the 30-day survival are controlled by
+including additive effects of sex and age and a smooth monotone
+decreasing function of the ambulance response time (=m0=) as specified by the
+argument =beta=.\\
+
+In addition, we generate two deterministic variables =A1= and =A0=
+that represent interventions where eveyone in the population receives
+bystander CPR and nobody in the population received bystander CPR,
+respectively. Similarly, we generate two counterfactual outcomes
+=set.Y1= and =set.Y0= that correspond to
+counterfactual 30-day survival status that we would see under
+intervention =A1= and =A0=, respectively.\\
+
+
+To create a simulated data for setting 2, we can run the following code:
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports both :results output  :session *R* :cache yes
+## Set effect size for data generation
+gamma <- c(0,0,0)
+alpha <- c(1.5,0.1,-0.03)
+beta <- c(2,1.3,-0.9,0.2,-0.04)
+## Generate data (with fixed seed)
+set.seed(17)
+n <- 500
+d2 <- generate_data(n=n,alpha=alpha,beta=beta,gamma=gamma,unif=TRUE)
+head(d2)
+#+END_SRC
+
+#+RESULTS[<2022-05-08 18:14:55> 96537d10b23a56741a84662a027eb72c99351ed8]:
+:   C1       C2         Z A A0 A1 set.Y0 set.Y1       m0 Y
+: 1  1 68.89249  4.216898 0  0  1      1      0 1.651903 1
+: 2  1 64.52226  7.703035 0  0  1      0      0 2.163672 0
+: 3  1 64.57243  4.813056 0  0  1      0      0 1.760106 0
+: 4  1 68.26281 10.256844 1  0  1      0      1 2.420976 1
+: 5  1 66.24554  3.244924 1  0  1      0      0 1.445724 0
+: 6  0 66.49033 18.394896 1  0  1      0      0 2.965010 0
+
+The only difference compared to setting 1 is that the ambulance
+response time is now generated from a uniform distribution as
+specified by argument =unif=TRUE=.
+
+** Estimation of counterfactual 30-day survival probabilities
+In our simulation study we estimate the counterfactual 30-day survival
+probabilities with 2 different estimation approaches:
+- Marginal structural models with monotonicity constraints (proposed
+  method)
+- Unconstrained g-formula
+
+We have implemented both procedures in the following =R= script:
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results none :exports code  :session *R* :cache yes
+source("./R/doMSMwithSC.R")
+#+END_SRC
+
+We can use it on the simulated dataset by evaluating the following
+code block:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports code :results none  :session *R* :cache yes
+## Convert exposure variable to a factor for modelling
+d1$A <- factor(d1$A)
+## Estimate counterfactual 30-days survival probabilities
+est <- doMSMwithSC(formula1="Y~A+C1+C2+s(Z,bs='mpd',k=25,m=2)",formula2="Y~A+C1+C2+rms:::rcs(Z,c(5,10,15,20))",formula3="Y~A+C1+C2+m0",y.formula="Y~A+s(Z,bs='mpd',k=25,m=2)",z=0:20,data=d1)
+#+END_SRC
+
+Both methods require an auxiliary regression model. For the proposed
+estimation approach, we use a logistic regression model with penalized
+B-splines as specified by the argument =formula1=. Note that this
+logistic regression model is fit by the function =scam= from =R=
+package =scam= and therefore needs to be complient with the built-in
+options in the =scam= package. To investigate the sensitivity of the
+proposed method to the selection of auxiliary regression model, we
+also employ a different logistic regression model as the auxiliary
+model. In particular, a model including the correct functional form of
+ambulance response time (saved as a variable =m0= in the dataset)
+instead of B-splines. This model is specified by the argument =formula3=.\\
+
+For the unconstrained g-formula, we use another logistic regression
+model with restricted cubic spline as specified by the argument
+=formula2=.\\
+
+Finally, for the proposed estimation approach we also need to specify
+the marginal structural model. We use a logistic regression model
+specified in the argument =y.model=.\\
+
+The argument =data= is used to specify the data and the argument =z=
+is used to specify the values of ambulance response time for which the
+counterfactual 30-day survival probabilities will be predicted.
+
+The output from the function call gives the estimates across specified
+ambulance response time-points:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports results :results output  :session *R* :cache yes
+est
+#+END_SRC
+
+#+RESULTS[<2022-05-08 18:16:36> 822e4ac9e5ba30696f698514bf4f62af107ee9ba]:
+#+begin_example
+$SCAM
+$SCAM$surv.yes
+         1          2          3          4          5          6          7
+0.60598576 0.56620806 0.52555863 0.48456762 0.44378321 0.40374266 0.36494446
+         8          9         10         11         12         13         14
+0.32782479 0.29274030 0.25995850 0.22965571 0.20192146 0.17676799 0.15414272
+        15         16         17         18         19         20         21
+0.13394220 0.11602586 0.10022869 0.08637219 0.07427321 0.06375079 0.05463112
+
+$SCAM$surv.no
+         1          2          3          4          5          6          7
+0.21746215 0.19083551 0.16677429 0.14520240 0.12599886 0.10901117 0.09406733
+         8          9         10         11         12         13         14
+0.08098588 0.06958388 0.05968292 0.05111337 0.04371707 0.03734892 0.03187749
+        15         16         17         18         19         20         21
+0.02718496 0.02316666 0.01973028 0.01679487 0.01428981 0.01215378 0.01033369
+
+
+$SCAM2
+$SCAM2$surv.yes
+         1          2          3          4          5          6          7
+0.66962083 0.61290802 0.55377443 0.49501230 0.43961255 0.38995905 0.34682804
+         8          9         10         11         12         13         14
+0.31004540 0.27874541 0.25197375 0.22885748 0.20868553 0.19090047 0.17507507
+        15         16         17         18         19         20         21
+0.16087577 0.14804987 0.13639620 0.12575989 0.11601555 0.10706439 0.09882604
+
+$SCAM2$surv.no
+         1          2          3          4          5          6          7
+0.26369760 0.21861496 0.17984829 0.14763649 0.12174126 0.10148860 0.08577729
+         8          9         10         11         12         13         14
+0.07356220 0.06392399 0.05617750 0.04982723 0.04452425 0.04002211 0.03614556
+        15         16         17         18         19         20         21
+0.03276645 0.02979151 0.02714984 0.02478815 0.02266464 0.02074691 0.01900909
+
+
+$Gform
+$Gform$surv.yes
+ [1] 0.58573566 0.55139977 0.51656807 0.48157488 0.44676081 0.41245953
+ [7] 0.37862742 0.34387114 0.30680947 0.26668957 0.22366055 0.17991330
+[13] 0.14101580 0.11046608 0.08899786 0.07597316 0.07025098 0.06974481
+[19] 0.07304276 0.07923693 0.08742492
+
+$Gform$surv.no
+ [1] 0.20283944 0.18111232 0.16123885 0.14316231 0.12680376 0.11206809
+ [7] 0.09871378 0.08607203 0.07365597 0.06130856 0.04917709 0.03787883
+[13] 0.02860833 0.02178699 0.01721597 0.01452720 0.01336540 0.01326320
+[19] 0.01393077 0.01519514 0.01688794
+#+end_example
+
+
+** True counterfactual 30-day survival probabilities
+We estimate the true counterfactual 30-day
+survival probabilities from a large simulated data of counterfactual outcomes by using a logistic regression
+model with the correct functional form of ambulance response
+time. This can be done by the following =R= code:
+
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports both :results output  :session *R* :cache yes
+## Set effect size for data generation
+gamma <- c(0,0,0)
+alpha <- c(1.5,0.1,-0.03)
+beta <- c(2,1.3,-0.9,0.2,-0.04)
+## Generate data (with fixed seed) for setting 1
+set.seed(17)
+d <- generate_data(n=100000,alpha=alpha,beta=beta,gamma=gamma,unif=FALSE)
+## Counterfactual data under intervention where everybody gets bystander CPR
+d1 <- d[,c("C1","C2","Z","m0","A1","set.Y1")]
+## Counterfactual data under intervention where nobody gets bystander CPR
+d0 <- d[,c("C1","C2","Z","m0","A0","set.Y0")]
+colnames(d1) <- colnames(d0) <- c("C1","C2","Z","m0","A","Y")
+## Combined counterfactual data
+dCF <- rbind(d1,d0)
+dCF$A <- factor(dCF$A)
+## Fit the MSM to the counterfactual data with correct function of Z
+msm <-glm(formula=Y~A+m0,data=dCF,family=binomial("logit"))
+## Predict true counterfactual probabilities
+newdata <- data.frame(expand.grid(A=factor(c(0,1)),Z=c(0:20)))
+## True function of Z
+newdata$m0 <- log(newdata$Z+1)
+## Predicted counterfactual 30-day survival probabilities
+pp <-predict(msm,newdata=newdata,type="response")
+pp.yes <- pp[newdata$A==1]
+pp.no <- pp[newdata$A==0]
+truth <- list(pp.yes=pp.yes,pp.no=pp.no)
+truth
+#+END_SRC
+
+#+RESULTS[<2022-05-08 18:24:00> 9c2344736721b643a8d045fe23e3f404071b6e3c]:
+#+begin_example
+$pp.yes
+        2         4         6         8        10        12        14        16
+0.6982873 0.5541831 0.4635628 0.4003560 0.3534103 0.3170036 0.2878583 0.2639476
+       18        20        22        24        26        28        30        32
+0.2439451 0.2269435 0.2122996 0.1995443 0.1883263 0.1783777 0.1694901 0.1614986
+       34        36        38        40        42
+0.1542716 0.1477020 0.1417022 0.1361996 0.1311337
+
+$pp.no
+         1          3          5          7          9         11         13
+0.38610594 0.25250824 0.19017495 0.15357297 0.12932404 0.11200301 0.09897419
+        15         17         19         21         23         25         27
+0.08879667 0.08061375 0.07388303 0.06824375 0.06344639 0.05931264 0.05571158
+        29         31         33         35         37         39         41
+0.05254488 0.04973718 0.04722974 0.04497607 0.04293887 0.04108788 0.03939827
+#+end_example
+
+
+** Run Simulations
+In our manuscript, we report the results of the proposed MSM estimator with monotonicity
+constraints using 2 different auxiliary regression models and the unconstrained g-formula
+across 2000 simulations for sample sizes 500 and 5000 in both simulation
+settings.\\
+
+Full code to the simulation study is given in the
+following script:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :eval no :results none :exports code  :session *R* :cache yes
+source("./Code/RunSimulations.R")
+#+END_SRC
+
+
+For the purpose of illustration, we show the results from setting one
+across 10 simulations for sample size 500. First we import the needed
+functions:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :results none :exports code  :session *R* :cache yes
+source("./R/generate_data.R")
+source("./R/sim.loop.R")
+source("./R/summary.simloop.R")
+source("./R/plot.simloop.R")
+source("./R/doMSMwithSC.R")
+#+END_SRC
+
+
+To run the simulations we can use the function =sim.loop.MSM=.  This
+function requires the specification of number of simulations =s=. For
+each simulation, this function first generates the data by calling the
+function =generate_data= with the arguments specified by =n= (sample
+size of simulated data), =alpha=, =beta= and
+=gamma=, (effect sizes for covariates and exposure) and =unif=
+(distribution of ambulance response time). Thereafter, it estimates
+the counterfactual 30-day survival probabilities by calling the
+function =doMSMwithSC= with arguments =formula1=,
+=formula2=, =formula3=, =y.formula= (required model specification) and
+=z= (ambulance response times for prediction). The argument=mccores=
+controls the number of cores used for parallel computation.
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports code :results none  :session *R* :cache yes
+## Set effect size for data generation
+gamma <- c(0,0,0)
+alpha <- c(1.5,0.1,-0.03)
+beta <- c(2,1.3,-0.9,0.2,-0.04)
+## Simulations
+## Number of simulations
+s <- 10
+n <- 500
+## Generate seeds for data generation
+set.seed(12)
+seeds <- sample(1:10000000,s,replace=FALSE)
+## Run the simulations
+out <- sim.loop.MSM(n=n,s=s,seeds=seeds,alpha=alpha,beta=beta,gamma=gamma,unif=TRUE,formula1="Y~A+C1+C2+s(Z,bs='mpd',k=25,m=2)",formula3="Y~A+C1+C2+m0",formula2="Y~A+C1+C2+rms:::rcs(Z,c(5,10,15,20))",y.formula="Y~A+s(Z,bs='mpd',k=25,m=2)",mccores=1,z=0:20)
+#+END_SRC
+
+
+
+The output from the function =sim.loop.MSM= is a list a list with
+length =s=. Each element of the list contains the estimated
+counterfactual 30-day survival probabilities. To show the results, we
+can use function =plot.simloop=:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :results graphics :file "./figures/example-fig.png" :exports code  :session *R* :cache yes
+output <- list(out=out,truth=truth)
+class(output) <- "simloop"
+plot(output,n=500,subtitle=c("Bystander CPR","No bystander CPR"))
+#+END_SRC
+
+
+#+RESULTS[<2022-05-08 22:59:42> 9b0b1407689dd546601043ec725a4c0bc922b27c]:
+[[file:./figures/example-fig.png]]
+
+The function =plot.simloop= takes an argument =which= that can be used to
+specify what kind of summary of the simulation results should be
+displayed. The argument =which= can take values from =raw= (predicted
+probabilities), =bias= (bias across simulations), and =variance=
+(variance across simulations).
+
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :results graphics :file "./figures/example-fig-bias.png" :exports code  :session *R* :cache yes
+plot(output,which="bias",ylim1=c(-0.2,0.1),ylim2=c(-0.2,0.1),n=500,subtitle=c("Bystander CPR","No bystander CPR"))
+#+END_SRC
+
+#+RESULTS[<2022-05-08 23:02:28> 5392c822dd9e4b6148a18044a0f50ce9793cadbe]:
+[[file:./figures/example-fig-bias.png]]
+

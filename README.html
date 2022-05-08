@@ -1,0 +1,642 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2022-05-08 Sun 23:04 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title></title>
+<meta name="generator" content="Org-mode" />
+<meta name="author" content="Liis Starkopf" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgheadline5">1. Web appendix</a>
+<ul>
+<li><a href="#orgheadline1">1.1. Data generating mechanism</a></li>
+<li><a href="#orgheadline2">1.2. Estimation of counterfactual 30-day survival probabilities</a></li>
+<li><a href="#orgheadline3">1.3. True counterfactual 30-day survival probabilities</a></li>
+<li><a href="#orgheadline4">1.4. Run Simulations</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline5" class="outline-2">
+<h2 id="orgheadline5"><span class="section-number-2">1</span> Web appendix</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+This is the web appendix to our manuscript entitled <i>Marginal structural models with monotonicity constraints: a case
+study in out-of-hospital cardiac arrest patients</i>. <br  />
+</p>
+
+<p>
+We are motivated by a recent study
+that examines the effect of ambulance response time on 30-day survival
+probability in out-of-hospital cardiac arrest (OHCA) patients if
+either all patients had received or none of the patients had received
+bystander cardiopulmonary resuscitation (CPR).<br  />
+</p>
+
+<p>
+It is natural to assume
+that the 30-day survival chances for both cases - if all OHCA patients
+had received or none of the OHCA patients had received bystander CPR -
+do not increase when the ambulance response time increases.
+</p>
+
+<p>
+In our manuscript we propose an estimation procedure that estimates
+that uses a marginal structural model (MSM) with shape constraints to
+that respects the monotone relationship of the outcome (30-day
+survival) and the continuous covariate of interest (ambulance response
+time).<br  />
+</p>
+
+<p>
+In this web appendix we provide <code>R</code> code for the simulation study
+presented in the manuscript.
+</p>
+
+<p>
+<b>Note:</b> To run any of the code chunks below you need to load the
+following <code>R</code> packages:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-R"><span style="color: #008b8b;">library</span>(scam)
+<span style="color: #008b8b;">library</span>(lava)
+<span style="color: #008b8b;">library</span>(data.table)
+<span style="color: #008b8b;">library</span>(rms)
+<span style="color: #008b8b;">library</span>(parallel)
+<span style="color: #008b8b;">library</span>(prodlim)
+</pre>
+</div>
+</div>
+
+
+<div id="outline-container-orgheadline1" class="outline-3">
+<h3 id="orgheadline1"><span class="section-number-3">1.1</span> Data generating mechanism</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+To generate the data for simulation study, we need to load the following <code>R</code> script:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-R"><span style="color: #008b8b;">source</span>(<span style="color: #8b2252;">"./R/generate_data.R"</span>)
+</pre>
+</div>
+
+<p>
+To create a simulated data for setting 1, we can run the following code:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-R"><span style="color: #b22222;">## </span><span style="color: #b22222;">Set effect size for data generation</span>
+gamma <span style="color: #008b8b;">&lt;-</span> c(0,0,0)
+alpha <span style="color: #008b8b;">&lt;-</span> c(1.5,0.1,-0.03)
+beta <span style="color: #008b8b;">&lt;-</span> c(2,1.3,-0.9,0.2,-0.04)
+<span style="color: #b22222;">## </span><span style="color: #b22222;">Generate data (with fixed seed)</span>
+set.seed(17)
+n <span style="color: #008b8b;">&lt;-</span> 500
+d1 <span style="color: #008b8b;">&lt;-</span> generate_data(n=n,alpha=alpha,beta=beta,gamma=gamma,unif=<span style="color: #228b22;">FALSE</span>)
+head(d1)
+</pre>
+</div>
+
+<pre class="example">
+  C1       C2          Z A A0 A1 set.Y0 set.Y1        m0 Y
+1  1 68.89249  2.8292071 0  0  1      0      0 1.3426577 0
+2  1 64.52226  5.1811659 0  0  1      0      0 1.8215069 0
+3  1 64.57243 11.7335715 0  0  1      0      0 2.5442419 0
+4  1 68.26281  8.4890214 1  0  1      0      0 2.2501355 0
+5  1 66.24554  8.8481369 0  0  1      0      1 2.2872823 0
+6  0 66.49033  0.8152458 1  0  1      0      1 0.5962209 1
+</pre>
+
+
+
+<p>
+We simulate a covariate sex (<code>C1</code>) from a Bernoulli distribution, a covariate age (<code>C2</code>)
+from a Gaussian distribution and a continuous covariate ambulance
+response time (<code>Z</code>). By setting the argument <code>unif=FALSE</code> will draw
+the ambulance response time from a Gamma distribution. Thereby, the effect of sex and
+age on ambulance response time is specified by the argument
+<code>gamma</code>. Note that by setting <code>gamma &lt;- c(0,0,0)</code> we assume ambulance response time is independent of sex and age.<br  />
+</p>
+
+<p>
+A binary observed bystander CPR status (<code>A</code>) is drawn following a logistic
+regression model with additive effects of age and sex as specified by
+the argument <code>alpha</code>.<br  />
+</p>
+
+<p>
+Another logistic
+regression model is used to draw the outcome of 30-day survival. The covariate effects on the 30-day survival are controlled by
+including additive effects of sex and age and a smooth monotone
+decreasing function of the ambulance response time (<code>m0</code>) as specified by the
+argument <code>beta</code>.<br  />
+</p>
+
+<p>
+In addition, we generate two deterministic variables <code>A1</code> and <code>A0</code>
+that represent interventions where eveyone in the population receives
+bystander CPR and nobody in the population received bystander CPR,
+respectively. Similarly, we generate two counterfactual outcomes
+<code>set.Y1</code> and <code>set.Y0</code> that correspond to
+counterfactual 30-day survival status that we would see under
+intervention <code>A1</code> and <code>A0</code>, respectively.<br  />
+</p>
+
+
+<p>
+To create a simulated data for setting 2, we can run the following code:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-R"><span style="color: #b22222;">## </span><span style="color: #b22222;">Set effect size for data generation</span>
+gamma <span style="color: #008b8b;">&lt;-</span> c(0,0,0)
+alpha <span style="color: #008b8b;">&lt;-</span> c(1.5,0.1,-0.03)
+beta <span style="color: #008b8b;">&lt;-</span> c(2,1.3,-0.9,0.2,-0.04)
+<span style="color: #b22222;">## </span><span style="color: #b22222;">Generate data (with fixed seed)</span>
+set.seed(17)
+n <span style="color: #008b8b;">&lt;-</span> 500
+d2 <span style="color: #008b8b;">&lt;-</span> generate_data(n=n,alpha=alpha,beta=beta,gamma=gamma,unif=<span style="color: #228b22;">TRUE</span>)
+head(d2)
+</pre>
+</div>
+
+<pre class="example">
+  C1       C2         Z A A0 A1 set.Y0 set.Y1       m0 Y
+1  1 68.89249  4.216898 0  0  1      1      0 1.651903 1
+2  1 64.52226  7.703035 0  0  1      0      0 2.163672 0
+3  1 64.57243  4.813056 0  0  1      0      0 1.760106 0
+4  1 68.26281 10.256844 1  0  1      0      1 2.420976 1
+5  1 66.24554  3.244924 1  0  1      0      0 1.445724 0
+6  0 66.49033 18.394896 1  0  1      0      0 2.965010 0
+</pre>
+
+<p>
+The only difference compared to setting 1 is that the ambulance
+response time is now generated from a uniform distribution as
+specified by argument <code>unif=TRUE</code>.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgheadline2" class="outline-3">
+<h3 id="orgheadline2"><span class="section-number-3">1.2</span> Estimation of counterfactual 30-day survival probabilities</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+In our simulation study we estimate the counterfactual 30-day survival
+probabilities with 2 different estimation approaches:
+</p>
+<ul class="org-ul">
+<li>Marginal structural models with monotonicity constraints (proposed
+method)</li>
+<li>Unconstrained g-formula</li>
+</ul>
+
+<p>
+We have implemented both procedures in the following <code>R</code> script:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-R"><span style="color: #008b8b;">source</span>(<span style="color: #8b2252;">"./R/doMSMwithSC.R"</span>)
+</pre>
+</div>
+
+<p>
+We can use it on the simulated dataset by evaluating the following
+code block:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-R"><span style="color: #b22222;">## </span><span style="color: #b22222;">Convert exposure variable to a factor for modelling</span>
+d1$A <span style="color: #008b8b;">&lt;-</span> factor(d1$A)
+<span style="color: #b22222;">## </span><span style="color: #b22222;">Estimate counterfactual 30-days survival probabilities</span>
+est <span style="color: #008b8b;">&lt;-</span> doMSMwithSC(formula1=<span style="color: #8b2252;">"Y~A+C1+C2+s(Z,bs='mpd',k=25,m=2)"</span>,formula2=<span style="color: #8b2252;">"Y~A+C1+C2+rms:::rcs(Z,c(5,10,15,20))"</span>,formula3=<span style="color: #8b2252;">"Y~A+C1+C2+m0"</span>,y.formula=<span style="color: #8b2252;">"Y~A+s(Z,bs='mpd',k=25,m=2)"</span>,z=0:20,data=d1)
+</pre>
+</div>
+
+<p>
+Both methods require an auxiliary regression model. For the proposed
+estimation approach, we use a logistic regression model with penalized
+B-splines as specified by the argument <code>formula1</code>. Note that this
+logistic regression model is fit by the function <code>scam</code> from <code>R</code>
+package <code>scam</code> and therefore needs to be complient with the built-in
+options in the <code>scam</code> package. To investigate the sensitivity of the
+proposed method to the selection of auxiliary regression model, we
+also employ a different logistic regression model as the auxiliary
+model. In particular, a model including the correct functional form of
+ambulance response time (saved as a variable <code>m0</code> in the dataset)
+instead of B-splines. This model is specified by the argument <code>formula3</code>.<br  />
+</p>
+
+<p>
+For the unconstrained g-formula, we use another logistic regression
+model with restricted cubic spline as specified by the argument
+<code>formula2</code>.<br  />
+</p>
+
+<p>
+Finally, for the proposed estimation approach we also need to specify
+the marginal structural model. We use a logistic regression model
+specified in the argument <code>y.model</code>.<br  />
+</p>
+
+<p>
+The argument <code>data</code> is used to specify the data and the argument <code>z</code>
+is used to specify the values of ambulance response time for which the
+counterfactual 30-day survival probabilities will be predicted.
+</p>
+
+<p>
+The output from the function call gives the estimates across specified
+ambulance response time-points:
+</p>
+
+<pre class="example">
+$SCAM
+$SCAM$surv.yes
+         1          2          3          4          5          6          7
+0.60598576 0.56620806 0.52555863 0.48456762 0.44378321 0.40374266 0.36494446
+         8          9         10         11         12         13         14
+0.32782479 0.29274030 0.25995850 0.22965571 0.20192146 0.17676799 0.15414272
+        15         16         17         18         19         20         21
+0.13394220 0.11602586 0.10022869 0.08637219 0.07427321 0.06375079 0.05463112
+
+$SCAM$surv.no
+         1          2          3          4          5          6          7
+0.21746215 0.19083551 0.16677429 0.14520240 0.12599886 0.10901117 0.09406733
+         8          9         10         11         12         13         14
+0.08098588 0.06958388 0.05968292 0.05111337 0.04371707 0.03734892 0.03187749
+        15         16         17         18         19         20         21
+0.02718496 0.02316666 0.01973028 0.01679487 0.01428981 0.01215378 0.01033369
+
+
+$SCAM2
+$SCAM2$surv.yes
+         1          2          3          4          5          6          7
+0.66962083 0.61290802 0.55377443 0.49501230 0.43961255 0.38995905 0.34682804
+         8          9         10         11         12         13         14
+0.31004540 0.27874541 0.25197375 0.22885748 0.20868553 0.19090047 0.17507507
+        15         16         17         18         19         20         21
+0.16087577 0.14804987 0.13639620 0.12575989 0.11601555 0.10706439 0.09882604
+
+$SCAM2$surv.no
+         1          2          3          4          5          6          7
+0.26369760 0.21861496 0.17984829 0.14763649 0.12174126 0.10148860 0.08577729
+         8          9         10         11         12         13         14
+0.07356220 0.06392399 0.05617750 0.04982723 0.04452425 0.04002211 0.03614556
+        15         16         17         18         19         20         21
+0.03276645 0.02979151 0.02714984 0.02478815 0.02266464 0.02074691 0.01900909
+
+
+$Gform
+$Gform$surv.yes
+ [1] 0.58573566 0.55139977 0.51656807 0.48157488 0.44676081 0.41245953
+ [7] 0.37862742 0.34387114 0.30680947 0.26668957 0.22366055 0.17991330
+[13] 0.14101580 0.11046608 0.08899786 0.07597316 0.07025098 0.06974481
+[19] 0.07304276 0.07923693 0.08742492
+
+$Gform$surv.no
+ [1] 0.20283944 0.18111232 0.16123885 0.14316231 0.12680376 0.11206809
+ [7] 0.09871378 0.08607203 0.07365597 0.06130856 0.04917709 0.03787883
+[13] 0.02860833 0.02178699 0.01721597 0.01452720 0.01336540 0.01326320
+[19] 0.01393077 0.01519514 0.01688794
+</pre>
+</div>
+</div>
+
+
+<div id="outline-container-orgheadline3" class="outline-3">
+<h3 id="orgheadline3"><span class="section-number-3">1.3</span> True counterfactual 30-day survival probabilities</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+We estimate the true counterfactual 30-day
+survival probabilities from a large simulated data of counterfactual outcomes by using a logistic regression
+model with the correct functional form of ambulance response
+time. This can be done by the following <code>R</code> code:
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-R"><span style="color: #b22222;">## </span><span style="color: #b22222;">Set effect size for data generation</span>
+gamma <span style="color: #008b8b;">&lt;-</span> c(0,0,0)
+alpha <span style="color: #008b8b;">&lt;-</span> c(1.5,0.1,-0.03)
+beta <span style="color: #008b8b;">&lt;-</span> c(2,1.3,-0.9,0.2,-0.04)
+<span style="color: #b22222;">## </span><span style="color: #b22222;">Generate data (with fixed seed) for setting 1</span>
+set.seed(17)
+d <span style="color: #008b8b;">&lt;-</span> generate_data(n=100000,alpha=alpha,beta=beta,gamma=gamma,unif=<span style="color: #228b22;">FALSE</span>)
+<span style="color: #b22222;">## </span><span style="color: #b22222;">Counterfactual data under intervention where everybody gets bystander CPR</span>
+d1 <span style="color: #008b8b;">&lt;-</span> d[,c(<span style="color: #8b2252;">"C1"</span>,<span style="color: #8b2252;">"C2"</span>,<span style="color: #8b2252;">"Z"</span>,<span style="color: #8b2252;">"m0"</span>,<span style="color: #8b2252;">"A1"</span>,<span style="color: #8b2252;">"set.Y1"</span>)]
+<span style="color: #b22222;">## </span><span style="color: #b22222;">Counterfactual data under intervention where nobody gets bystander CPR</span>
+d0 <span style="color: #008b8b;">&lt;-</span> d[,c(<span style="color: #8b2252;">"C1"</span>,<span style="color: #8b2252;">"C2"</span>,<span style="color: #8b2252;">"Z"</span>,<span style="color: #8b2252;">"m0"</span>,<span style="color: #8b2252;">"A0"</span>,<span style="color: #8b2252;">"set.Y0"</span>)]
+colnames(d1) <span style="color: #008b8b;">&lt;-</span> colnames(d0) <span style="color: #008b8b;">&lt;-</span> c(<span style="color: #8b2252;">"C1"</span>,<span style="color: #8b2252;">"C2"</span>,<span style="color: #8b2252;">"Z"</span>,<span style="color: #8b2252;">"m0"</span>,<span style="color: #8b2252;">"A"</span>,<span style="color: #8b2252;">"Y"</span>)
+<span style="color: #b22222;">## </span><span style="color: #b22222;">Combined counterfactual data</span>
+dCF <span style="color: #008b8b;">&lt;-</span> rbind(d1,d0)
+dCF$A <span style="color: #008b8b;">&lt;-</span> factor(dCF$A)
+<span style="color: #b22222;">## </span><span style="color: #b22222;">Fit the MSM to the counterfactual data with correct function of Z</span>
+msm <span style="color: #008b8b;">&lt;-</span>glm(formula=Y~A+m0,data=dCF,family=binomial(<span style="color: #8b2252;">"logit"</span>))
+<span style="color: #b22222;">## </span><span style="color: #b22222;">Predict true counterfactual probabilities</span>
+newdata <span style="color: #008b8b;">&lt;-</span> data.frame(expand.grid(A=factor(c(0,1)),Z=c(0:20)))
+<span style="color: #b22222;">## </span><span style="color: #b22222;">True function of Z</span>
+newdata$m0 <span style="color: #008b8b;">&lt;-</span> log(newdata$Z+1)
+<span style="color: #b22222;">## </span><span style="color: #b22222;">Predicted counterfactual 30-day survival probabilities</span>
+pp <span style="color: #008b8b;">&lt;-</span>predict(msm,newdata=newdata,type=<span style="color: #8b2252;">"response"</span>)
+pp.yes <span style="color: #008b8b;">&lt;-</span> pp[newdata$A==1]
+pp.no <span style="color: #008b8b;">&lt;-</span> pp[newdata$A==0]
+truth <span style="color: #008b8b;">&lt;-</span> list(pp.yes=pp.yes,pp.no=pp.no)
+truth
+</pre>
+</div>
+
+<pre class="example">
+$pp.yes
+        2         4         6         8        10        12        14        16
+0.6982873 0.5541831 0.4635628 0.4003560 0.3534103 0.3170036 0.2878583 0.2639476
+       18        20        22        24        26        28        30        32
+0.2439451 0.2269435 0.2122996 0.1995443 0.1883263 0.1783777 0.1694901 0.1614986
+       34        36        38        40        42
+0.1542716 0.1477020 0.1417022 0.1361996 0.1311337
+
+$pp.no
+         1          3          5          7          9         11         13
+0.38610594 0.25250824 0.19017495 0.15357297 0.12932404 0.11200301 0.09897419
+        15         17         19         21         23         25         27
+0.08879667 0.08061375 0.07388303 0.06824375 0.06344639 0.05931264 0.05571158
+        29         31         33         35         37         39         41
+0.05254488 0.04973718 0.04722974 0.04497607 0.04293887 0.04108788 0.03939827
+</pre>
+</div>
+</div>
+
+
+<div id="outline-container-orgheadline4" class="outline-3">
+<h3 id="orgheadline4"><span class="section-number-3">1.4</span> Run Simulations</h3>
+<div class="outline-text-3" id="text-1-4">
+<p>
+In our manuscript, we report the results of the proposed MSM estimator with monotonicity
+constraints using 2 different auxiliary regression models and the unconstrained g-formula
+across 2000 simulations for sample sizes 500 and 5000 in both simulation
+settings.<br  />
+</p>
+
+<p>
+Full code to the simulation study is given in the
+following script:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-R"><span style="color: #008b8b;">source</span>(<span style="color: #8b2252;">"./Code/RunSimulations.R"</span>)
+</pre>
+</div>
+
+
+<p>
+For the purpose of illustration, we show the results from setting one
+across 10 simulations for sample size 500. First we import the needed
+functions:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-R"><span style="color: #008b8b;">source</span>(<span style="color: #8b2252;">"./R/generate_data.R"</span>)
+<span style="color: #008b8b;">source</span>(<span style="color: #8b2252;">"./R/sim.loop.R"</span>)
+<span style="color: #008b8b;">source</span>(<span style="color: #8b2252;">"./R/summary.simloop.R"</span>)
+<span style="color: #008b8b;">source</span>(<span style="color: #8b2252;">"./R/plot.simloop.R"</span>)
+<span style="color: #008b8b;">source</span>(<span style="color: #8b2252;">"./R/doMSMwithSC.R"</span>)
+</pre>
+</div>
+
+
+<p>
+To run the simulations we can use the function <code>sim.loop.MSM</code>.  This
+function requires the specification of number of simulations <code>s</code>. For
+each simulation, this function first generates the data by calling the
+function <code>generate_data</code> with the arguments specified by <code>n</code> (sample
+size of simulated data), <code>alpha</code>, <code>beta</code> and
+<code>gamma</code>, (effect sizes for covariates and exposure) and <code>unif</code>
+(distribution of ambulance response time). Thereafter, it estimates
+the counterfactual 30-day survival probabilities by calling the
+function <code>doMSMwithSC</code> with arguments <code>formula1</code>,
+<code>formula2</code>, <code>formula3</code>, <code>y.formula</code> (required model specification) and
+<code>z</code> (ambulance response times for prediction). The argument=mccores=
+controls the number of cores used for parallel computation.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-R"><span style="color: #b22222;">## </span><span style="color: #b22222;">Set effect size for data generation</span>
+gamma <span style="color: #008b8b;">&lt;-</span> c(0,0,0)
+alpha <span style="color: #008b8b;">&lt;-</span> c(1.5,0.1,-0.03)
+beta <span style="color: #008b8b;">&lt;-</span> c(2,1.3,-0.9,0.2,-0.04)
+<span style="color: #b22222;">## </span><span style="color: #b22222;">Simulations</span>
+<span style="color: #b22222;">## </span><span style="color: #b22222;">Number of simulations</span>
+s <span style="color: #008b8b;">&lt;-</span> 10
+n <span style="color: #008b8b;">&lt;-</span> 500
+<span style="color: #b22222;">## </span><span style="color: #b22222;">Generate seeds for data generation</span>
+set.seed(12)
+seeds <span style="color: #008b8b;">&lt;-</span> sample(1:10000000,s,replace=<span style="color: #228b22;">FALSE</span>)
+<span style="color: #b22222;">## </span><span style="color: #b22222;">Run the simulations</span>
+out <span style="color: #008b8b;">&lt;-</span> sim.loop.MSM(n=n,s=s,seeds=seeds,alpha=alpha,beta=beta,gamma=gamma,unif=<span style="color: #228b22;">TRUE</span>,formula1=<span style="color: #8b2252;">"Y~A+C1+C2+s(Z,bs='mpd',k=25,m=2)"</span>,formula3=<span style="color: #8b2252;">"Y~A+C1+C2+m0"</span>,formula2=<span style="color: #8b2252;">"Y~A+C1+C2+rms:::rcs(Z,c(5,10,15,20))"</span>,y.formula=<span style="color: #8b2252;">"Y~A+s(Z,bs='mpd',k=25,m=2)"</span>,mccores=1,z=0:20)
+</pre>
+</div>
+
+
+
+<p>
+The output from the function <code>sim.loop.MSM</code> is a list a list with
+length <code>s</code>. Each element of the list contains the estimated
+counterfactual 30-day survival probabilities. To show the results, we
+can use function <code>plot.simloop</code>:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-R">output <span style="color: #008b8b;">&lt;-</span> list(out=out,truth=truth)
+class(output) <span style="color: #008b8b;">&lt;-</span> <span style="color: #8b2252;">"simloop"</span>
+plot(output,n=500,subtitle=c(<span style="color: #8b2252;">"Bystander CPR"</span>,<span style="color: #8b2252;">"No bystander CPR"</span>))
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="./figures/example-fig.png" alt="example-fig.png" />
+</p>
+</div>
+
+<p>
+The function <code>plot.simloop</code> takes an argument <code>which</code> that can be used to
+specify what kind of summary of the simulation results should be
+displayed. The argument <code>which</code> can take values from <code>raw</code> (predicted
+probabilities), <code>bias</code> (bias across simulations), and <code>variance</code>
+(variance across simulations).
+</p>
+
+
+<div class="org-src-container">
+
+<pre class="src src-R">plot(output,which=<span style="color: #8b2252;">"bias"</span>,ylim1=c(-0.2,0.1),ylim2=c(-0.2,0.1),n=500,subtitle=c(<span style="color: #8b2252;">"Bystander CPR"</span>,<span style="color: #8b2252;">"No bystander CPR"</span>))
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="./figures/example-fig-bias.png" alt="example-fig-bias.png" />
+</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Liis Starkopf</p>
+<p class="date">Created: 2022-05-08 Sun 23:04</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
