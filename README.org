@@ -1,4 +1,4 @@
-# Web-appendix-MSM-with-SC
+# MSMwithSC
 * Web appendix
 
 This is the web appendix to our manuscript entitled /Marginal structural models with monotonicity constraints: a case
