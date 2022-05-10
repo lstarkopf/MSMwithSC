@@ -1,6 +1,4 @@
 generate_data<- function(n,alpha,beta,gamma,unif=FALSE){
-    #browser()
-    require(lava)
     m <- lvm()
     distribution(m,~C1) <- binomial.lvm(p=0.7)
     distribution(m,~C2) <- gaussian.lvm(mean=65,sd=2)
@@ -31,6 +29,7 @@ generate_data<- function(n,alpha,beta,gamma,unif=FALSE){
         Y
     }
     d <- sim(m,n)
+    d$A <- factor(d$A)
     return(d)
 }
 
