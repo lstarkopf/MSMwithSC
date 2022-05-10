@@ -73,7 +73,7 @@ versus no one received bystander CPR) by calling the function
 Generate data (with fixed seed)
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  
+#+BEGIN_SRC R  :results output  :exports both  :session *R* :cache yes  
 set.seed(17)
 d=generate_data(n=500,
                 alpha=c(1.5,0.1,-0.03),
@@ -83,16 +83,15 @@ d=generate_data(n=500,
 head(d)
 #+END_SRC
 
-#+RESULTS[(2022-05-10 15:11:28) 9699099da647d05401160db28e1072f16b13b52f]:
-:results:
-  C1       C2          Z A A0 A1 set.Y0 set.Y1        m0 Y
-1  1 68.89249  2.8292071 0  0  1      0      0 1.3426577 0
-2  1 64.52226  5.1811659 0  0  1      0      0 1.8215069 0
-3  1 64.57243 11.7335715 0  0  1      0      0 2.5442419 0
-4  1 68.26281  8.4890214 1  0  1      0      0 2.2501355 0
-5  1 66.24554  8.8481369 0  0  1      0      1 2.2872823 0
-6  0 66.49033  0.8152458 1  0  1      0      1 0.5962209 1
-:end:
+#+RESULTS[(2022-05-10 15:26:38) b03acda8c8751f266085d91d1bd7fe5af3a270c2]:
+:   C1       C2          Z A A0 A1 set.Y0 set.Y1        m0 Y
+: 1  1 68.89249  2.8292071 0  0  1      0      0 1.3426577 0
+: 2  1 64.52226  5.1811659 0  0  1      0      0 1.8215069 0
+: 3  1 64.57243 11.7335715 0  0  1      0      0 2.5442419 0
+: 4  1 68.26281  8.4890214 1  0  1      0      0 2.2501355 0
+: 5  1 66.24554  8.8481369 0  0  1      0      1 2.2872823 0
+: 6  0 66.49033  0.8152458 1  0  1      0      1 0.5962209 1
+
 
 LIIS: In the dataset, Y is the outcome, A the treatment, A0 and A1 the
 ... Z is the ... and m0 is the ...
@@ -103,7 +102,7 @@ Estimate counterfactual 30-days survival probabilities
 with and without shape constraint
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R  :results output drawer  :exports both  :session *R* :cache yes  
+#+BEGIN_SRC R  :results output   :exports both  :session *R* :cache yes  
 est <- doMSMwithSC(outcome="Y",
                    treatment="A",
                    covariates=c("C1","C2"),
@@ -115,16 +114,14 @@ x=summary(est)
 head(x)
 #+END_SRC
 
-#+RESULTS[(2022-05-10 15:17:37) 33d411e5997820d0dd599455a1ac6fa5d25d5e9d]:
-:results:
-      Method Exposure Survival.treated Survival.untreated
-1: B_splines        0        0.6059858          0.2174622
-2: B_splines        1        0.5662081          0.1908355
-3: B_splines        2        0.5255586          0.1667743
-4: B_splines        3        0.4845676          0.1452024
-5: B_splines        4        0.4437832          0.1259989
-6: B_splines        5        0.4037427          0.1090112
-:end:
+#+RESULTS[(2022-05-10 15:26:47) 8cadd41e927b9dcef052dcc430aabcbcc3ff8ccf]:
+:       Method Exposure Survival.treated Survival.untreated
+: 1: B_splines        0        0.6059858          0.2174622
+: 2: B_splines        1        0.5662081          0.1908355
+: 3: B_splines        2        0.5255586          0.1667743
+: 4: B_splines        3        0.4845676          0.1452024
+: 5: B_splines        4        0.4437832          0.1259989
+: 6: B_splines        5        0.4037427          0.1090112
 
 ** Visual
 
@@ -454,7 +451,6 @@ plot(output,n=500,subtitle=c("Bystander CPR","No bystander CPR"))
 #+END_SRC
 
 
-#+RESULTS[<2022-05-08 22:59:42> 9b0b1407689dd546601043ec725a4c0bc922b27c]:
 [[file:./figures/example-fig.png]]
 
 The function =plot.simloop= takes an argument =which= that can be used to
@@ -469,6 +465,5 @@ probabilities), =bias= (bias across simulations), and =variance=
 plot(output,which="bias",ylim1=c(-0.2,0.1),ylim2=c(-0.2,0.1),n=500,subtitle=c("Bystander CPR","No bystander CPR"))
 #+END_SRC
 
-#+RESULTS[<2022-05-08 23:02:28> 5392c822dd9e4b6148a18044a0f50ce9793cadbe]:
 [[file:./figures/example-fig-bias.png]]
 
