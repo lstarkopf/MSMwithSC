@@ -41,7 +41,7 @@ library(prodlim)
 library(devtools)
 #+END_SRC
 
-We also load the =R= codes (can as well clone the repository)
+We also load the =R= codes (you can as well clone the repository and use source instead of source_url)
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R  :results output raw  :exports code  :session *R* :cache yes  
 for(f in c("doMSMwithSC.R","generate_data.R","plot.simloop.R","sim.loop.R","summary.simloop.R")){
@@ -51,6 +51,7 @@ for(f in c("doMSMwithSC.R","generate_data.R","plot.simloop.R","sim.loop.R","summ
 
 * Usage
 
+** generate_data
 The function =generate_data= is used to simulate data.  The arguments
 are:
 - =n= the sample size
@@ -68,25 +69,32 @@ versus no one received bystander CPR) by calling the function
 - =y.formula= 
 - =z= discrete grid across the support of the continuous exposure variable for prediction.
 
+
+Generate data (with fixed seed)
+
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R  :results none :exports code  :session *R* :cache yes
-## Generate data (with fixed seed)
 set.seed(17)
 d=generate_data(n=500,
                 alpha=c(1.5,0.1,-0.03),
                 beta=c(2,1.3,-0.9,0.2,-0.04),
                 gamma=rep(0,3),
                 unif=FALSE)
-## Estimate counterfactual 30-days survival probabilities
-## with and without shape constraint
+#+END_SRC
+
+** Estimation
+
+Estimate counterfactual 30-days survival probabilities
+with and without shape constraint
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results none :exports code  :session *R* :cache yes
 est <- doMSMwithSC(outcome.formula="Y~A+C1+C2+s(Z,bs='mpd',k=25,m=2)",
                    formula2="Y~A+C1+C2+rms:::rcs(Z,c(5,10,15,20))",
                    formula3="Y~A+C1+C2+m0",
                    y.formula="Y~A+s(Z,bs='mpd',k=25,m=2)",
                    z=0:20,
                    data=d)
-## illustrate results
-ggplot(
 #+END_SRC
 
 * Simulation study 
