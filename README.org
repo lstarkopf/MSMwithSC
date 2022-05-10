@@ -83,7 +83,6 @@ d=generate_data(n=500,
 head(d)
 #+END_SRC
 
-#+RESULTS[(2022-05-10 15:26:38) b03acda8c8751f266085d91d1bd7fe5af3a270c2]:
 :   C1       C2          Z A A0 A1 set.Y0 set.Y1        m0 Y
 : 1  1 68.89249  2.8292071 0  0  1      0      0 1.3426577 0
 : 2  1 64.52226  5.1811659 0  0  1      0      0 1.8215069 0
@@ -157,7 +156,6 @@ d1 <- generate_data(n=n,alpha=alpha,beta=beta,gamma=gamma,unif=FALSE)
 head(d1)
 #+END_SRC
 
-#+RESULTS[<2022-05-08 18:14:42> 9d390fcf42ff56a22bf7a4ae7531cb6f427a9cf3]:
 :   C1       C2          Z A A0 A1 set.Y0 set.Y1        m0 Y
 : 1  1 68.89249  2.8292071 0  0  1      0      0 1.3426577 0
 : 2  1 64.52226  5.1811659 0  0  1      0      0 1.8215069 0
