@@ -128,19 +128,12 @@ Plot the estimated counterfactual 30-days survival probabilities:
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R  :results none :exports code  :session *R* :cache yes
-autoplot(est)
+autoplot(est,estimator="B_splines")
 #+END_SRC
 
 * Simulation study 
 
 ** Data generating mechanism
-
-To generate the data for simulation study, we need to load the following =R= script:
-
-#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R  :results none :exports code  :session *R* :cache yes
-source("./R/generate_data.R")
-#+END_SRC
 
 To create a simulated data for setting 1, we can run the following code:
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
