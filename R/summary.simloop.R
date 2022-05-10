@@ -1,8 +1,3 @@
-library(ggplot2)
-library(reshape)
-library(data.table)
-
-
 summary.simloop <- function(x,which="raw",times=c(0:20)){
     ## browser()
     s <- length(x$out)

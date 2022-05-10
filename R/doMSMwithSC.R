@@ -1,5 +1,4 @@
 doMSMwithSC <- function(formula1,formula2,formula3,y.formula,data,z){
-    ## browser()
     fit1 <- scam(formula=formula(formula1),data=data,family=binomial(link="logit"))
     fit2 <- glm(formula=formula(formula2),data=data,family=binomial(link="logit"))
     fit3 <- glm(formula=formula(formula3),data=data,family=binomial(link="logit"))

@@ -1,6 +1,3 @@
-library(ggplot2)
-library(scales)
-
 theme_4 <- function(...)
     theme_classic()+theme(aspect.ratio=1,plot.margin=unit(c(1,1,1,0),"lines"),strip.background=element_blank(),strip.text.x=element_text(size=12,family="Times"),legend.position="top",legend.title=element_blank())+theme(axis.title.x=element_text(family="Times", size=14,vjust=-1),plot.subtitle=element_text(family="Times", size=14,hjust=0.5),plot.title=element_text(family="Times", size=14,hjust=-0.15),axis.title.y=element_text(family="Times",size=14))
 
@@ -11,7 +8,6 @@ g_legend<-function(a.gplot){
   return(legend)}
 
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
-  library(grid)
 
   # Make a list from the ... arguments and plotlist
   plots <- c(list(...), plotlist)

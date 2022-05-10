@@ -2,52 +2,68 @@
 * Web appendix
 
 This is the web appendix to our manuscript entitled /Marginal structural models with monotonicity constraints: a case
-study in out-of-hospital cardiac arrest patients/. \\
+study in out-of-hospital cardiac arrest patients/. 
 
-We are motivated by a recent study
-that examines the effect of ambulance response time on 30-day survival
-probability in out-of-hospital cardiac arrest (OHCA) patients if
-either all patients had received or none of the patients had received
-bystander cardiopulmonary resuscitation (CPR).\\
+We are motivated by a study that examines the effect of ambulance
+response time on the marginal 30-day survival probability in
+out-of-hospital cardiac arrest (OHCA) patients if:
+- all patients had received had received bystander cardiopulmonary resuscitation (CPR)
+- none of the patients had received bystander cardiopulmonary resuscitation (CPR).
 
-It is natural to assume
-that the 30-day survival chances for both cases - if all OHCA patients
-had received or none of the OHCA patients had received bystander CPR -
-do not increase when the ambulance response time increases.
+For a given patient, it is natural to assume that the 30-day survival
+chances do not increase when the ambulance response time increases.
 
-In our manuscript we propose an estimation procedure that estimates
-that uses a marginal structural model (MSM) with shape constraints to
-that respects the monotone relationship of the outcome (30-day
-survival) and the continuous covariate of interest (ambulance response
-time).\\
+In our manuscript we propose an estimation procedure based on a
+marginal structural model (MSM) that includes the monotonicity
+contraint between a continuous covariate of interest, ambulance
+response time in our example, and a binary outcome, 30-day survival in
+our example.
 
-In this web appendix we provide =R= code for the simulation study
-presented in the manuscript.
+In this web appendix we the =R= codes that implement our method and
+the =R= codes that we used for the simulation study presented in the
+manuscript.
 
-*Note:* To run any of the code chunks below you need to load the
-following =R= packages:
+** Preparation
+To run any of the code chunks below you need to load the following =R=
+packages:
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R  :results none :exports code  :session *R* :cache yes
 library(scam)
 library(lava)
 library(data.table)
+library(ggplot2)
+library(scales)
+library(grid)
 library(rms)
 library(parallel)
 library(prodlim)
+library(devtools)
 #+END_SRC
 
+We also load the =R= codes
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results output raw  :exports code  :session *R* :cache yes  
+for(f in c("doMSMwithSC.R","generate_data.R","plot.simloop.R","sim.loop.R","summary.simloop.R")){
+  source_url(paste0("https://github.com/lstarkopf/MSMwithSC/blob/main/R/",f,"?raw=TRUE"))
+}
+#+END_SRC
+
+#+RESULTS[(2022-05-10 07:43:59) abbfaf567438f0317fd031fa290d5f1cccb4c5a1]:
+Error in file(filename, "r", encoding = encoding) : 
+  cannot open the connection to 'https://github.com/lstarkopf/MSMwithSC/R/doMSMwithSC.R'
+In addition: Warning message:
+In file(filename, "r", encoding = encoding) :
+  cannot open URL 'https://github.com/lstarkopf/MSMwithSC/R/doMSMwithSC.R': HTTP status was '404 Not Found'
+
+* Usage
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R  :results none :exports none  :session *R* :cache yes
-setwd("~/Dropbox/PhD final/MSIII/Simulations/")
+#+BEGIN_SRC R  :results none :exports code  :session *R* :cache yes
+source("./R/generate_data.R")
 #+END_SRC
 
-
-#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R  :results none :exports none  :session *R* :cache yes
-path.to.file <- "~/Dropbox/PhD final/MSIII/Simulations"
-#+END_SRC
+* Simulation study 
 
 ** Data generating mechanism
 
