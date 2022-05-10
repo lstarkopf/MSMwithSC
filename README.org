@@ -8,9 +8,9 @@ We are motivated by a study that examines the effect of ambulance
 response time on the marginal 30-day survival probability in
 out-of-hospital cardiac arrest (OHCA) patients if:
 - all patients had received had received bystander cardiopulmonary resuscitation (CPR)
-- none of the patients had received bystander cardiopulmonary resuscitation (CPR).
+- none of the patients had received CPR.
 
-For a given patient, it is natural to assume that the 30-day survival
+For any given patient, it is natural to assume that the 30-day survival
 chances do not increase when the ambulance response time increases.
 
 In our manuscript we propose an estimation procedure based on a
@@ -24,7 +24,7 @@ the =R= codes that we used for the simulation study presented in the
 manuscript.
 
 ** Preparation
-To run any of the code chunks below you need to load the following =R=
+To the code chunks below you need to load the following =R=
 packages:
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
@@ -40,7 +40,8 @@ library(parallel)
 library(prodlim)
 library(devtools)
 #+END_SRC
-We also load the =R= codes
+
+We also load the =R= codes (can as well clone the repository)
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R  :results output raw  :exports code  :session *R* :cache yes  
 for(f in c("doMSMwithSC.R","generate_data.R","plot.simloop.R","sim.loop.R","summary.simloop.R")){
