@@ -204,7 +204,6 @@ d2 <- generate_data(n=n,alpha=alpha,beta=beta,gamma=gamma,unif=TRUE)
 head(d2)
 #+END_SRC
 
-#+RESULTS[<2022-05-08 18:14:55> 96537d10b23a56741a84662a027eb72c99351ed8]:
 :   C1       C2         Z A A0 A1 set.Y0 set.Y1       m0 Y
 : 1  1 68.89249  4.216898 0  0  1      1      0 1.651903 1
 : 2  1 64.52226  7.703035 0  0  1      0      0 2.163672 0
@@ -229,7 +228,7 @@ can use it on the simulated dataset by evaluating the following code
 block:
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R :exports both :results output drawer  :session *R* :cache yes
+#+BEGIN_SRC R :exports both :results output   :session *R* :cache yes
 ## Convert exposure variable to a factor for modelling
 d1$A <- factor(d1$A)
 ## Estimate counterfactual 30-days survival probabilities
@@ -243,16 +242,14 @@ est <- doMSMwithSC(outcome="Y",
 head(summary(est))
 #+END_SRC
 
-#+RESULTS[(2022-05-10 15:21:41) 05442745800c707435d627697ec09ccb427eacaa]:
-:results:
-      Method Exposure Survival.treated Survival.untreated
-1: B_splines        0        0.6059858          0.2174622
-2: B_splines        1        0.5662081          0.1908355
-3: B_splines        2        0.5255586          0.1667743
-4: B_splines        3        0.4845676          0.1452024
-5: B_splines        4        0.4437832          0.1259989
-6: B_splines        5        0.4037427          0.1090112
-:end:
+:       Method Exposure Survival.treated Survival.untreated
+: 1: B_splines        0        0.6059858          0.2174622
+: 2: B_splines        1        0.5662081          0.1908355
+: 3: B_splines        2        0.5255586          0.1667743
+: 4: B_splines        3        0.4845676          0.1452024
+: 5: B_splines        4        0.4437832          0.1259989
+: 6: B_splines        5        0.4037427          0.1090112
+
 
 Both methods require an auxiliary regression model. For the proposed
 estimation approach, we use a logistic regression model with penalized
@@ -283,11 +280,10 @@ The output from the function call gives the estimates across specified
 ambulance response time-points:
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R :exports results :results output  :session *R* :cache yes
+#+BEGIN_SRC R :exports both :results output  :session *R* :cache yes
 summary(est)
 #+END_SRC
 
-#+RESULTS[(2022-05-10 15:22:02) 16e274956bc52ae8d7cbc2c31d5db553c55b94c4]:
 #+begin_example
          Method Exposure Survival.treated Survival.untreated
  1:   B_splines        0       0.60598576         0.21746215
@@ -373,7 +369,6 @@ generateTruth(alpha=c(1.5,0.1,-0.03),
               sample.size=100000)
 #+END_SRC
 
-#+RESULTS[<2022-05-08 18:24:00> 9c2344736721b643a8d045fe23e3f404071b6e3c]:
 #+begin_example
 $pp.yes
         2         4         6         8        10        12        14        16
