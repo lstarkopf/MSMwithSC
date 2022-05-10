@@ -73,14 +73,29 @@ versus no one received bystander CPR) by calling the function
 Generate data (with fixed seed)
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R  :results none :exports code  :session *R* :cache yes
+#+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  
 set.seed(17)
 d=generate_data(n=500,
                 alpha=c(1.5,0.1,-0.03),
                 beta=c(2,1.3,-0.9,0.2,-0.04),
                 gamma=rep(0,3),
                 unif=FALSE)
+head(d)
 #+END_SRC
+
+#+RESULTS[(2022-05-10 15:11:28) 9699099da647d05401160db28e1072f16b13b52f]:
+:results:
+  C1       C2          Z A A0 A1 set.Y0 set.Y1        m0 Y
+1  1 68.89249  2.8292071 0  0  1      0      0 1.3426577 0
+2  1 64.52226  5.1811659 0  0  1      0      0 1.8215069 0
+3  1 64.57243 11.7335715 0  0  1      0      0 2.5442419 0
+4  1 68.26281  8.4890214 1  0  1      0      0 2.2501355 0
+5  1 66.24554  8.8481369 0  0  1      0      1 2.2872823 0
+6  0 66.49033  0.8152458 1  0  1      0      1 0.5962209 1
+:end:
+
+LIIS: In the dataset, Y is the outcome, A the treatment, A0 and A1 the
+... Z is the ... and m0 is the ...
 
 ** Estimation
 
@@ -88,7 +103,7 @@ Estimate counterfactual 30-days survival probabilities
 with and without shape constraint
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R  :results none :exports code  :session *R* :cache yes
+#+BEGIN_SRC R  :results output drawer  :exports both  :session *R* :cache yes  
 est <- doMSMwithSC(outcome="Y",
                    treatment="A",
                    covariates=c("C1","C2"),
@@ -96,8 +111,20 @@ est <- doMSMwithSC(outcome="Y",
                    Gformula="Y~A+C1+C2+rms:::rcs(Z,c(5,10,15,20))",
                    grid=0:20,
                    data=d)
-est
+x=summary(est)
+head(x)
 #+END_SRC
+
+#+RESULTS[(2022-05-10 15:17:37) 33d411e5997820d0dd599455a1ac6fa5d25d5e9d]:
+:results:
+      Method Exposure Survival.treated Survival.untreated
+1: B_splines        0        0.6059858          0.2174622
+2: B_splines        1        0.5662081          0.1908355
+3: B_splines        2        0.5255586          0.1667743
+4: B_splines        3        0.4845676          0.1452024
+5: B_splines        4        0.4437832          0.1259989
+6: B_splines        5        0.4037427          0.1090112
+:end:
 
 ** Visual
 
@@ -141,8 +168,6 @@ head(d1)
 : 4  1 68.26281  8.4890214 1  0  1      0      0 2.2501355 0
 : 5  1 66.24554  8.8481369 0  0  1      0      1 2.2872823 0
 : 6  0 66.49033  0.8152458 1  0  1      0      1 0.5962209 1
-
-
 
 We simulate a covariate sex (=C1=) from a Bernoulli distribution, a covariate age (=C2=)
 from a Gaussian distribution and a continuous covariate ambulance
@@ -204,27 +229,35 @@ probabilities with 2 different estimation approaches:
   method)
 - Unconstrained g-formula
 
-We have implemented both procedures in the following =R= script:
-#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R  :results none :exports code  :session *R* :cache yes
-source("./R/doMSMwithSC.R")
-#+END_SRC
-
-We can use it on the simulated dataset by evaluating the following
-code block:
+We have implemented both procedures in the function doMSMwithSC.  We
+can use it on the simulated dataset by evaluating the following code
+block:
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R :exports code :results none  :session *R* :cache yes
+#+BEGIN_SRC R :exports both :results output drawer  :session *R* :cache yes
 ## Convert exposure variable to a factor for modelling
 d1$A <- factor(d1$A)
 ## Estimate counterfactual 30-days survival probabilities
-est <- doMSMwithSC(outcome.formula="Y~A+C1+C2+s(Z,bs='mpd',k=25,m=2)",
-                   formula2="Y~A+C1+C2+rms:::rcs(Z,c(5,10,15,20))",
-                   formula3="Y~A+C1+C2+m0",
-                   y.formula="Y~A+s(Z,bs='mpd',k=25,m=2)",
-                   z=0:20,
+est <- doMSMwithSC(outcome="Y",
+                   treatment="A",
+                   covariates=c("C1","C2"),
+                   exposure="s(Z,bs='mpd',k=25,m=2)",
+                   Gformula="Y~A+C1+C2+rms:::rcs(Z,c(5,10,15,20))",
+                   grid=0:20,
                    data=d1)
+head(summary(est))
 #+END_SRC
+
+#+RESULTS[(2022-05-10 15:21:41) 05442745800c707435d627697ec09ccb427eacaa]:
+:results:
+      Method Exposure Survival.treated Survival.untreated
+1: B_splines        0        0.6059858          0.2174622
+2: B_splines        1        0.5662081          0.1908355
+3: B_splines        2        0.5255586          0.1667743
+4: B_splines        3        0.4845676          0.1452024
+5: B_splines        4        0.4437832          0.1259989
+6: B_splines        5        0.4037427          0.1090112
+:end:
 
 Both methods require an auxiliary regression model. For the proposed
 estimation approach, we use a logistic regression model with penalized
@@ -256,98 +289,93 @@ ambulance response time-points:
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports results :results output  :session *R* :cache yes
-est
+summary(est)
 #+END_SRC
 
-#+RESULTS[<2022-05-08 18:16:36> 822e4ac9e5ba30696f698514bf4f62af107ee9ba]:
+#+RESULTS[(2022-05-10 15:22:02) 16e274956bc52ae8d7cbc2c31d5db553c55b94c4]:
 #+begin_example
-$SCAM
-$SCAM$surv.yes
-         1          2          3          4          5          6          7
-0.60598576 0.56620806 0.52555863 0.48456762 0.44378321 0.40374266 0.36494446
-         8          9         10         11         12         13         14
-0.32782479 0.29274030 0.25995850 0.22965571 0.20192146 0.17676799 0.15414272
-        15         16         17         18         19         20         21
-0.13394220 0.11602586 0.10022869 0.08637219 0.07427321 0.06375079 0.05463112
-
-$SCAM$surv.no
-         1          2          3          4          5          6          7
-0.21746215 0.19083551 0.16677429 0.14520240 0.12599886 0.10901117 0.09406733
-         8          9         10         11         12         13         14
-0.08098588 0.06958388 0.05968292 0.05111337 0.04371707 0.03734892 0.03187749
-        15         16         17         18         19         20         21
-0.02718496 0.02316666 0.01973028 0.01679487 0.01428981 0.01215378 0.01033369
-
-
-$SCAM2
-$SCAM2$surv.yes
-         1          2          3          4          5          6          7
-0.66962083 0.61290802 0.55377443 0.49501230 0.43961255 0.38995905 0.34682804
-         8          9         10         11         12         13         14
-0.31004540 0.27874541 0.25197375 0.22885748 0.20868553 0.19090047 0.17507507
-        15         16         17         18         19         20         21
-0.16087577 0.14804987 0.13639620 0.12575989 0.11601555 0.10706439 0.09882604
-
-$SCAM2$surv.no
-         1          2          3          4          5          6          7
-0.26369760 0.21861496 0.17984829 0.14763649 0.12174126 0.10148860 0.08577729
-         8          9         10         11         12         13         14
-0.07356220 0.06392399 0.05617750 0.04982723 0.04452425 0.04002211 0.03614556
-        15         16         17         18         19         20         21
-0.03276645 0.02979151 0.02714984 0.02478815 0.02266464 0.02074691 0.01900909
-
-
-$Gform
-$Gform$surv.yes
- [1] 0.58573566 0.55139977 0.51656807 0.48157488 0.44676081 0.41245953
- [7] 0.37862742 0.34387114 0.30680947 0.26668957 0.22366055 0.17991330
-[13] 0.14101580 0.11046608 0.08899786 0.07597316 0.07025098 0.06974481
-[19] 0.07304276 0.07923693 0.08742492
-
-$Gform$surv.no
- [1] 0.20283944 0.18111232 0.16123885 0.14316231 0.12680376 0.11206809
- [7] 0.09871378 0.08607203 0.07365597 0.06130856 0.04917709 0.03787883
-[13] 0.02860833 0.02178699 0.01721597 0.01452720 0.01336540 0.01326320
-[19] 0.01393077 0.01519514 0.01688794
+         Method Exposure Survival.treated Survival.untreated
+ 1:   B_splines        0       0.60598576         0.21746215
+ 2:   B_splines        1       0.56620806         0.19083551
+ 3:   B_splines        2       0.52555863         0.16677429
+ 4:   B_splines        3       0.48456762         0.14520240
+ 5:   B_splines        4       0.44378321         0.12599886
+ 6:   B_splines        5       0.40374266         0.10901117
+ 7:   B_splines        6       0.36494446         0.09406733
+ 8:   B_splines        7       0.32782479         0.08098588
+ 9:   B_splines        8       0.29274030         0.06958388
+10:   B_splines        9       0.25995850         0.05968292
+11:   B_splines       10       0.22965571         0.05111337
+12:   B_splines       11       0.20192146         0.04371707
+13:   B_splines       12       0.17676799         0.03734892
+14:   B_splines       13       0.15414272         0.03187749
+15:   B_splines       14       0.13394220         0.02718496
+16:   B_splines       15       0.11602586         0.02316666
+17:   B_splines       16       0.10022869         0.01973028
+18:   B_splines       17       0.08637219         0.01679487
+19:   B_splines       18       0.07427321         0.01428981
+20:   B_splines       19       0.06375079         0.01215378
+21:   B_splines       20       0.05463112         0.01033369
+22: known_shape        0       0.66962083         0.26369760
+23: known_shape        1       0.61290802         0.21861496
+24: known_shape        2       0.55377443         0.17984829
+25: known_shape        3       0.49501230         0.14763649
+26: known_shape        4       0.43961255         0.12174126
+27: known_shape        5       0.38995905         0.10148860
+28: known_shape        6       0.34682804         0.08577729
+29: known_shape        7       0.31004540         0.07356220
+30: known_shape        8       0.27874541         0.06392399
+31: known_shape        9       0.25197375         0.05617750
+32: known_shape       10       0.22885748         0.04982723
+33: known_shape       11       0.20868553         0.04452425
+34: known_shape       12       0.19090047         0.04002211
+35: known_shape       13       0.17507507         0.03614556
+36: known_shape       14       0.16087577         0.03276645
+37: known_shape       15       0.14804987         0.02979151
+38: known_shape       16       0.13639620         0.02714984
+39: known_shape       17       0.12575989         0.02478815
+40: known_shape       18       0.11601555         0.02266464
+41: known_shape       19       0.10706439         0.02074691
+42: known_shape       20       0.09882604         0.01900909
+43:       Gform        0       0.58573566         0.20283944
+44:       Gform        1       0.55139977         0.18111232
+45:       Gform        2       0.51656807         0.16123885
+46:       Gform        3       0.48157488         0.14316231
+47:       Gform        4       0.44676081         0.12680376
+48:       Gform        5       0.41245953         0.11206809
+49:       Gform        6       0.37862742         0.09871378
+50:       Gform        7       0.34387114         0.08607203
+51:       Gform        8       0.30680947         0.07365597
+52:       Gform        9       0.26668957         0.06130856
+53:       Gform       10       0.22366055         0.04917709
+54:       Gform       11       0.17991330         0.03787883
+55:       Gform       12       0.14101580         0.02860833
+56:       Gform       13       0.11046608         0.02178699
+57:       Gform       14       0.08899786         0.01721597
+58:       Gform       15       0.07597316         0.01452720
+59:       Gform       16       0.07025098         0.01336540
+60:       Gform       17       0.06974481         0.01326320
+61:       Gform       18       0.07304276         0.01393077
+62:       Gform       19       0.07923693         0.01519514
+63:       Gform       20       0.08742492         0.01688794
+         Method Exposure Survival.treated Survival.untreated
 #+end_example
 
 
 ** True counterfactual 30-day survival probabilities
-We estimate the true counterfactual 30-day
-survival probabilities from a large simulated data of counterfactual outcomes by using a logistic regression
-model with the correct functional form of ambulance response
-time. This can be done by the following =R= code:
 
+We estimate the true counterfactual 30-day survival probabilities from
+a large simulated data of counterfactual outcomes by using a logistic
+regression model with the correct functional form of ambulance
+response time. This can be done by the following =R= code:
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports both :results output  :session *R* :cache yes
-## Set effect size for data generation
-gamma <- c(0,0,0)
-alpha <- c(1.5,0.1,-0.03)
-beta <- c(2,1.3,-0.9,0.2,-0.04)
-## Generate data (with fixed seed) for setting 1
-set.seed(17)
-d <- generate_data(n=100000,alpha=alpha,beta=beta,gamma=gamma,unif=FALSE)
-## Counterfactual data under intervention where everybody gets bystander CPR
-d1 <- d[,c("C1","C2","Z","m0","A1","set.Y1")]
-## Counterfactual data under intervention where nobody gets bystander CPR
-d0 <- d[,c("C1","C2","Z","m0","A0","set.Y0")]
-colnames(d1) <- colnames(d0) <- c("C1","C2","Z","m0","A","Y")
-## Combined counterfactual data
-dCF <- rbind(d1,d0)
-dCF$A <- factor(dCF$A)
-## Fit the MSM to the counterfactual data with correct function of Z
-msm <-glm(formula=Y~A+m0,data=dCF,family=binomial("logit"))
-## Predict true counterfactual probabilities
-newdata <- data.frame(expand.grid(A=factor(c(0,1)),Z=c(0:20)))
-## True function of Z
-newdata$m0 <- log(newdata$Z+1)
-## Predicted counterfactual 30-day survival probabilities
-pp <-predict(msm,newdata=newdata,type="response")
-pp.yes <- pp[newdata$A==1]
-pp.no <- pp[newdata$A==0]
-truth <- list(pp.yes=pp.yes,pp.no=pp.no)
-truth
+generateTruth(alpha=c(1.5,0.1,-0.03),
+              beta=c(2,1.3,-0.9,0.2,-0.04),
+              gamma=c(0,0,0),
+              seed=17,
+              sample.size=100000)
 #+END_SRC
 
 #+RESULTS[<2022-05-08 18:24:00> 9c2344736721b643a8d045fe23e3f404071b6e3c]:
