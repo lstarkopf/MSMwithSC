@@ -89,12 +89,23 @@ with and without shape constraint
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R  :results none :exports code  :session *R* :cache yes
-est <- doMSMwithSC(outcome.formula="Y~A+C1+C2+s(Z,bs='mpd',k=25,m=2)",
-                   formula2="Y~A+C1+C2+rms:::rcs(Z,c(5,10,15,20))",
-                   formula3="Y~A+C1+C2+m0",
-                   y.formula="Y~A+s(Z,bs='mpd',k=25,m=2)",
-                   z=0:20,
+est <- doMSMwithSC(outcome="Y",
+                   treatment="A",
+                   covariates=c("C1","C2"),
+                   exposure="s(Z,bs='mpd',k=25,m=2)",
+                   Gformula="Y~A+C1+C2+rms:::rcs(Z,c(5,10,15,20))",
+                   grid=0:20,
                    data=d)
+est
+#+END_SRC
+
+** Visual
+
+Plot the estimated counterfactual 30-days survival probabilities:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results none :exports code  :session *R* :cache yes
+autoplot(est)
 #+END_SRC
 
 * Simulation study 
@@ -207,20 +218,26 @@ code block:
 ## Convert exposure variable to a factor for modelling
 d1$A <- factor(d1$A)
 ## Estimate counterfactual 30-days survival probabilities
-est <- doMSMwithSC(outcome.formula="Y~A+C1+C2+s(Z,bs='mpd',k=25,m=2)",formula2="Y~A+C1+C2+rms:::rcs(Z,c(5,10,15,20))",formula3="Y~A+C1+C2+m0",y.formula="Y~A+s(Z,bs='mpd',k=25,m=2)",z=0:20,data=d1)
+est <- doMSMwithSC(outcome.formula="Y~A+C1+C2+s(Z,bs='mpd',k=25,m=2)",
+                   formula2="Y~A+C1+C2+rms:::rcs(Z,c(5,10,15,20))",
+                   formula3="Y~A+C1+C2+m0",
+                   y.formula="Y~A+s(Z,bs='mpd',k=25,m=2)",
+                   z=0:20,
+                   data=d1)
 #+END_SRC
 
 Both methods require an auxiliary regression model. For the proposed
 estimation approach, we use a logistic regression model with penalized
-B-splines as specified by the argument =outcome.formula=. Note that this
+B-splines as specified by the argument =exposure=. Note that this
 logistic regression model is fit by the function =scam= from =R=
-package =scam= and therefore needs to be complient with the built-in
-options in the =scam= package. To investigate the sensitivity of the
-proposed method to the selection of auxiliary regression model, we
-also employ a different logistic regression model as the auxiliary
-model. In particular, a model including the correct functional form of
-ambulance response time (saved as a variable =m0= in the dataset)
-instead of B-splines. This model is specified by the argument =formula3=.\\
+package =scam=. 
+
+To investigate the sensitivity of the proposed method to the selection
+of auxiliary regression model, we also employ a different logistic
+regression model as the auxiliary model. In particular, a model
+including the correct functional form of ambulance response time
+(saved as a variable =m0= in the dataset) instead of B-splines. This
+model is specified by the argument =formula3=.
 
 For the unconstrained g-formula, we use another logistic regression
 model with restricted cubic spline as specified by the argument

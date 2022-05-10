@@ -1,44 +1,54 @@
-doMSMwithSC <- function(outcome.formula,
-                        formula2,
-                        formula3,
-                        y.formula,
+doMSMwithSC <- function(outcome,
+                        treatment,
+                        exposure,
+                        covariates,
+                        Gformula,
                         data,
-                        z){
-    fit1 <- scam(formula=formula(outcome.formula),data=data,family=binomial(link="logit"))
-    fit2 <- glm(formula=formula(formula2),data=data,family=binomial(link="logit"))
-    fit3 <- glm(formula=formula(formula3),data=data,family=binomial(link="logit"))
+                        grid){
+    theCall <- match.call()
+    if (missing(grid)) grid = 1:20
+    # data preparation
     data.yes <- data.no <- data
     data.yes$A <- factor(1,levels=c(0,1))
     data.no$A <- factor(0,levels=c(0,1))
-    ##g-formula
-    pp2 <- sapply(c(0:20),function(z){data.yes$Z <- data.no$Z <- z;
-        pp2.yes <- predict(fit2,newdata=data.yes,type="response")
-        pp2.no <- predict(fit2,newdata=data.no,type="response")
+    # ----------------------------------------------------------------------
+    ## g-formula
+    # ----------------------------------------------------------------------
+    g <- glm(formula=formula(Gformula),
+             data=data,
+             family=binomial(link="logit"))
+    pp2 <- sapply(grid,function(z){
+        data.yes$Z <- data.no$Z <- z
+        pp2.yes <- predict(g,newdata=data.yes,type="response")
+        pp2.no <- predict(g,newdata=data.no,type="response")
         return(c(mean(pp2.yes),mean(pp2.no)))})
-    ##scam
-    data.yes$Z <- data.no$Z <- data$Z
-    data.yes$Y <- predict(fit1,newdata=data.yes,type="response")
-    data.no$Y <- predict(fit1,newdata=data.no,type="response")
-    data.msm <- rbind(data.yes,data.no)
-    suppressWarnings(msm.fit <- scam(formula=formula(y.formula),data=data.msm,family=binomial(link="logit")))
-    data.yes <- data.table(A=factor(1,levels=c(0,1)),Z=z)
-    data.no <- data.table(A=factor(0,levels=c(0,1)),Z=z)
-    pp1.yes <- predict(msm.fit,newdata=data.yes,type="response")
-    pp1.no <- predict(msm.fit,newdata=data.no,type="response")
-    ##scam2
-    data.yes <- data.no <- data
-    data.yes$A <- factor(1,levels=c(0,1))
-    data.no$A <- factor(0,levels=c(0,1))
-    data.yes$Y <- predict(fit3,newdata=data.yes,type="response")
-    data.no$Y <- predict(fit3,newdata=data.no,type="response")
-    data.msm <- rbind(data.yes,data.no)
-    suppressWarnings(msm.fit3 <- scam(formula=formula(y.formula),data=data.msm,family=binomial(link="logit")))
-    data.yes <- data.table(A=factor(1,levels=c(0,1)),Z=z)
-    data.no <- data.table(A=factor(0,levels=c(0,1)),Z=z)
-    pp3.yes <- predict(msm.fit3,newdata=data.yes,type="response")
-    pp3.no <- predict(msm.fit3,newdata=data.no,type="response")
-    ## browser()
-    return(list(SCAM=list(surv.yes=pp1.yes,surv.no=pp1.no),SCAM2=list(surv.yes=pp3.yes,surv.no=pp3.no),Gform=list(surv.yes=pp2[1,],surv.no=pp2[2,])))
+    # ----------------------------------------------------------------------
+    # fit MSM in stacked data using scam::scam
+    # ----------------------------------------------------------------------
+    # B-splines
+    form1 <- formula(paste0(outcome,"~",treatment,"+",exposure,"+",paste(covariates,collapse = "+")))
+    # data generating formula
+    form2 <- formula(paste0(outcome,"~",treatment,"+","m0","+",paste(covariates,collapse = "+")))
+    # marginal structural model
+    msm.formula = formula(paste0(outcome,"~",treatment,"+",exposure))
+    out = lapply(c(form1,form2),function(ff){
+        scfit <- scam(formula=ff,data=data,family=binomial(link="logit"))
+        data.yes$Z <- data.no$Z <- data$Z
+        data.yes$Y <- predict(scfit,newdata=data.yes,type="response")
+        data.no$Y <- predict(scfit,newdata=data.no,type="response")
+        data.msm <- rbind(data.yes,data.no)
+        suppressWarnings(msm.fit <- scam(formula=formula(msm.formula),data=data.msm,family=binomial(link="logit")))
+        data.yes <- data.table(A=factor(1,levels=c(0,1)),Z=grid)
+        data.no <- data.table(A=factor(0,levels=c(0,1)),Z=grid)
+        pp.yes <- predict(msm.fit,newdata=data.yes,type="response")
+        pp.no <- predict(msm.fit,newdata=data.no,type="response")
+        list(surv.yes=pp.yes,surv.no=pp.no)
+    })
+    names(out) = c("B_splines","known_shape")
+    out = c(out,list(Gform=list(surv.yes=pp2[1,],surv.no=pp2[2,]),
+                     call = theCall))
+    class(out) = "MSMwithSC"
+    out
 }
 
 
