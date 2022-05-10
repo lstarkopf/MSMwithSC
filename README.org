@@ -49,12 +49,6 @@ for(f in c("doMSMwithSC.R","generate_data.R","plot.simloop.R","sim.loop.R","summ
 }
 #+END_SRC
 
-#+RESULTS[(2022-05-10 07:43:59) abbfaf567438f0317fd031fa290d5f1cccb4c5a1]:
-Error in file(filename, "r", encoding = encoding) : 
-  cannot open the connection to 'https://github.com/lstarkopf/MSMwithSC/R/doMSMwithSC.R'
-In addition: Warning message:
-In file(filename, "r", encoding = encoding) :
-  cannot open URL 'https://github.com/lstarkopf/MSMwithSC/R/doMSMwithSC.R': HTTP status was '404 Not Found'
 
 * Usage
 
