@@ -5,19 +5,19 @@ summary.simloop <- function(x,which="raw",times=c(0:20)){
         scam2.mes.yes <- data.table(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="known_shape",Survival.treated])))
         gform.mes.yes <- data.table(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="Gform",Survival.treated])))
         s1 <- ncol(scam.mes.yes)
-        s2 <- ncol(gform.mes.yes)
-        s3 <- ncol(scam2.mes.yes)
+        s3 <- ncol(gform.mes.yes)
+        s2 <- ncol(scam2.mes.yes)
         setnames(scam.mes.yes,paste0(c(1:s1)))
-        setnames(scam2.mes.yes,paste0(c(1:s3)))
-        setnames(gform.mes.yes,paste0(c(1:s2)))
+        setnames(scam2.mes.yes,paste0(c(1:s2)))
+        setnames(gform.mes.yes,paste0(c(1:s3)))
         scam.mes.yes[,z:=times]
         scam2.mes.yes[,z:=times]
         gform.mes.yes[,z:=times]
         scam.mes.yes <- melt(scam.mes.yes,measure.vars=paste0(1:s1))
         scam.mes.yes[,Method:="MSM with constraints"]
-        scam2.mes.yes <- melt(scam2.mes.yes,measure.vars=paste0(1:s3))
+        scam2.mes.yes <- melt(scam2.mes.yes,measure.vars=paste0(1:s2))
         scam2.mes.yes[,Method:="MSM with constraints (function known)"]
-        gform.mes.yes <- melt(gform.mes.yes,measure.vars=paste0(1:s2))
+        gform.mes.yes <- melt(gform.mes.yes,measure.vars=paste0(1:s3))
         gform.mes.yes[,Method:="G-formula"]
         res.yes <- rbind(scam.mes.yes,scam2.mes.yes,gform.mes.yes)
         truth.yes <- data.table(z=times,truth=x$truth$pp.yes)
@@ -31,8 +31,8 @@ summary.simloop <- function(x,which="raw",times=c(0:20)){
         scam2.mes.no <- data.table(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="known_shape",Survival.untreated])))
         gform.mes.no <- data.table(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="Gform",Survival.untreated])))
         setnames(scam.mes.no,paste0(c(1:s1)))
-        setnames(scam2.mes.no,paste0(c(1:s3)))
-        setnames(gform.mes.no,paste0(c(1:s2)))
+        setnames(scam2.mes.no,paste0(c(1:s2)))
+        setnames(gform.mes.no,paste0(c(1:s3)))
         scam.mes.no[,z:=times]
         scam2.mes.no[,z:=times]
         gform.mes.no[,z:=times]
@@ -40,7 +40,7 @@ summary.simloop <- function(x,which="raw",times=c(0:20)){
         scam.mes.no[,Method:="MSM with constraints"]
         scam2.mes.no <- melt(scam2.mes.no,measure.vars=paste0(1:s2))
         scam2.mes.no[,Method:="MSM with constraints (function known)"]
-        gform.mes.no <- melt(gform.mes.no,measure.vars=paste0(1:s2))
+        gform.mes.no <- melt(gform.mes.no,measure.vars=paste0(1:s3))
         gform.mes.no[,Method:="G-formula"]
         res.no <- rbind(scam.mes.no,scam2.mes.no,gform.mes.no)
         truth.no <- data.table(z=times,truth=x$truth$pp.no)
@@ -88,12 +88,12 @@ summary.simloop <- function(x,which="raw",times=c(0:20)){
             setnames(var2.yes,"var")
             setnames(var3.yes,"var")
             var.yes[,z:=factor(times,labels=times)]
-            var3.yes[,z:=factor(times,labels=times)]
             var2.yes[,z:=factor(times,labels=times)]
+            var3.yes[,z:=factor(times,labels=times)]
             var.yes[,Method:="MSM with constraints"]
-            var3.yes[,Method:="MSM with constraints (function known)"]
-            var2.yes[,Method:="G-formula"]
-            var.yes <- rbind(var.yes,var3.yes,var2.yes)
+            var2.yes[,Method:="MSM with constraints (function known)"]
+            var3.yes[,Method:="G-formula"]
+            var.yes <- rbind(var.yes,var2.yes,var3.yes)
             var.no <- data.table(apply(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="B_splines",Survival.untreated])),1,var))
             var2.no <- data.table(apply(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="known_shape",Survival.untreated])),1,var))
             var3.no <- data.table(apply(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="Gform",Survival.untreated])),1,var))
@@ -104,9 +104,9 @@ summary.simloop <- function(x,which="raw",times=c(0:20)){
             var2.no[,z:=factor(times,labels=times)]
             var3.no[,z:=factor(times,labels=times)]
             var.no[,Method:="MSM with constraints"]
-            var3.no[,Method:="MSM with constraints (function known)"]
-            var2.no[,Method:="G-formula"]
-            var.no <- rbind(var.no,var3.no,var2.no)
+            var2.no[,Method:="MSM with constraints (function known)"]
+            var3.no[,Method:="G-formula"]
+            var.no <- rbind(var.no,var2.no,var3.no)
             return(list(var.yes=var.yes,var.no=var.no))
         }
 }
