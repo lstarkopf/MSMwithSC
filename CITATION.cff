@@ -1,0 +1,22 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Web appendix: Marginal structural models with
+  monotonicity constraints: a case study in
+  out-of-hospital cardiac arrest patients.
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Liis
+    family-names: Starkopf
+    email: liisstarkopf@gmail.com
+  - given-names: Thomas
+    name-particle: Alexander
+    family-names: Gerds
+    email: tag@biostat.ku.dk
+repository-code: 'https://github.com/lstarkopf/MSMwithSC'
+commit: dd78f75321559004143308813638cd8d72563a13
