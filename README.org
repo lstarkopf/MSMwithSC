@@ -52,13 +52,6 @@ for(f in c("doMSMwithSC.R","generate_data.R","plot.simloop.R","sim.loop.R","summ
 }
 #+END_SRC
 
-#+RESULTS[<2022-08-27 12:30:23> e533155e99bff01e96a208c76435c8db8b7ec7a5]:
-[36mi[39m SHA-1 hash of file is 936e7954a8e78c8fc36c6f7617e2c9d22f63c0d7
-[36mi[39m SHA-1 hash of file is 379c73ea401fe48ac8378185b26606491edf6da1
-[36mi[39m SHA-1 hash of file is 7a3d12fcbd380b74b417d7513ce81ff36dc3cb24
-[36mi[39m SHA-1 hash of file is fd632bdee48199c33d701a0f7c77f53aa67d07dd
-[36mi[39m SHA-1 hash of file is 356a0997adafb3bc0ed3a370be1295100cac8d8d
-
 * Usage
 
 ** generate_data
@@ -300,14 +293,27 @@ source("./Code/RunSimulations.R")
 #+END_SRC
 
 The results from the simulation study can be found in the folder
-="./Results"= .
+=./Results= .
 
 The figures presented in the manuscript can be found
-in the folder ="./Figures"= and the code producing the figures is in
+in the folder =./Figures= and the code producing the figures is in
 the following =R=-script:
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :eval no :results none :exports code  :session *R* :cache yes
 source("./Code/PlotResults.R")
 #+END_SRC
+
+
+* Implementation for OCHA study
+In our manuscript, we apply the proposed MSM with monotonicity
+constraints to OCHA study.
+
+The code for implementing the estimation method together with 95%
+confidence intervals from bootstrap for this example is given in the following =R=-script:
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :eval no :results none :exports code  :session *R* :cache yes
+source("./Code/Application-example-OCHA-study.R")
+#+END_SRC
+
 
