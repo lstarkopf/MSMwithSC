@@ -2,29 +2,32 @@
 * Web appendix
 
 This is the web appendix to our manuscript entitled /Marginal structural models with monotonicity constraints: a case
-study in out-of-hospital cardiac arrest patients/. 
+study in out-of-hospital cardiac arrest patients/.
 
-We are motivated by a study that examines the effect of ambulance
-response time on the marginal 30-day survival probability in
-out-of-hospital cardiac arrest (OHCA) patients if:
+We are motivated by a study that examines the effect of bystander cardiopulmonary resuscitation (CPR)
+on the 30-day survival probability as a function of ambulance
+response time. In particular, we are interested in the in the counterfactual 30-day
+survival probability in out-of-hospital cardiac arrest (OHCA) patients if:
 - all patients had received had received bystander cardiopulmonary resuscitation (CPR)
-- none of the patients had received CPR.
+- none of the patients had received CPR
 
-For any given patient, it is natural to assume that the 30-day survival
-chances do not increase when the ambulance response time increases.
+as a function of ambulance response time. For any given patient, it is
+natural to assume that the 30-day survival chances do not increase
+when the ambulance response time increases.
 
 In our manuscript we propose an estimation procedure based on a
 marginal structural model (MSM) that respects a given monotonicity
-contraint between a continuous exposure covariate of interest,
+contraint between a continuous covariate of interest,
 ambulance response time in our example, and a binary outcome, 30-day
 survival in our example.
 
-In this web appendix we the =R= codes that implement our method and
+In this web appendix we present the =R= codes that implement our method and
 the =R= codes that we used for the simulation study presented in the
 manuscript.
 
+
 ** Preparation
-To the code chunks below you need to load the following =R=
+To run the code chunks below you need to load the following =R=
 packages:
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
@@ -43,11 +46,18 @@ library(devtools)
 
 We also load the =R= codes (you can as well clone the repository and use source instead of source_url)
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R  :results output raw  :exports code  :session *R* :cache yes  
+#+BEGIN_SRC R  :results output raw  :exports code  :session *R* :cache yes
 for(f in c("doMSMwithSC.R","generate_data.R","plot.simloop.R","sim.loop.R","summary.simloop.R")){
   source_url(paste0("https://raw.githubusercontent.com/lstarkopf/MSMwithSC/main/R/",f))
 }
 #+END_SRC
+
+#+RESULTS[<2022-08-27 12:30:23> e533155e99bff01e96a208c76435c8db8b7ec7a5]:
+[36mi[39m SHA-1 hash of file is 936e7954a8e78c8fc36c6f7617e2c9d22f63c0d7
+[36mi[39m SHA-1 hash of file is 379c73ea401fe48ac8378185b26606491edf6da1
+[36mi[39m SHA-1 hash of file is 7a3d12fcbd380b74b417d7513ce81ff36dc3cb24
+[36mi[39m SHA-1 hash of file is fd632bdee48199c33d701a0f7c77f53aa67d07dd
+[36mi[39m SHA-1 hash of file is 356a0997adafb3bc0ed3a370be1295100cac8d8d
 
 * Usage
 
@@ -55,25 +65,34 @@ for(f in c("doMSMwithSC.R","generate_data.R","plot.simloop.R","sim.loop.R","summ
 The function =generate_data= is used to simulate data.  The arguments
 are:
 - =n= the sample size
-- =alpha= regression parameters for the treatment model: a vector where the first element is the intercept and the remaining elements the covariate effect sizes for the treatment logistic regression model on the log-odds scale.
-- =beta= regression parameters for the outcome model: a vector where the first element is the intercept and the remaining elements the covariate effect sizes for the outcome logistic regression model on the log-odds scale.
-- =gamma= regression parameters for the continuous exposure variable model: a vector where the first element is the intercept and the remaining elements the covariate effect sizes for the outcome logistic regression model.
-- =unif= if =TRUE= specify a uniform distribution for the continuous exposure variable
+- =alpha= regression parameters for the treatment model: a vector
+  where the first element is the intercept and the remaining elements
+  are the covariate effect sizes for the treatment logistic regression model on the log-odds scale.
+- =beta= regression parameters for the outcome model: a vector where
+  the first element is the intercept and the remaining elements are the covariate effect sizes for the outcome logistic regression model on the log-odds scale.
+- =gamma= regression parameters for the continuous covariate of intest
+  model: a vector where the first element is the intercept and the
+  remaining elements the covariate effect sizes for the covariate fo interest regression model.
+- =unif= if =TRUE= specify a uniform distribution for the continuous
+  covariate of interest, otherwise use Gamma distribution.
 
 We estimate the counterfactual 30-day survival probabilities (had all
 versus no one received bystander CPR) by calling the function
 =doMSMwithSC= with arguments:
-- =outcome.formula= regression formula for outcome model with shape constraints (=scam=)
-- =formula2= 
-- =formula3=
-- =y.formula= 
-- =z= discrete grid across the support of the continuous exposure variable for prediction.
+- =outcome= outcome variable
+- =treatment= treatment variable
+- =smooth= smooth expression of the monotone function of the covariate of interest
+- =covariates= vector of baseline covariates
+- =Gformula= formula for the auxiliary outcome regression model used in
+  g-formula approach
+- =data= dataset
+- =grid= grid of values for the continuous covariate of interest
 
 
 Generate data (with fixed seed)
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R  :results output  :exports both  :session *R* :cache yes  
+#+BEGIN_SRC R  :results output  :exports both  :session *R* :cache yes
 set.seed(17)
 d=generate_data(n=500,
                 alpha=c(1.5,0.1,-0.03),
@@ -83,6 +102,7 @@ d=generate_data(n=500,
 head(d)
 #+END_SRC
 
+#+RESULTS[<2022-08-27 12:30:56> 18d42e925e9b01f2c8f9635d04cbed555ceed0ef]:
 :   C1       C2          Z A A0 A1 set.Y0 set.Y1        m0 Y
 : 1  1 68.89249  2.8292071 0  0  1      0      0 1.3426577 0
 : 2  1 64.52226  5.1811659 0  0  1      0      0 1.8215069 0
@@ -92,20 +112,65 @@ head(d)
 : 6  0 66.49033  0.8152458 1  0  1      0      1 0.5962209 1
 
 
-LIIS: In the dataset, Y is the outcome, A the treatment, A0 and A1 the
-... Z is the ... and m0 is the ...
+In the dataset, Y is the outcome, A the treatment, A0 and A1 are the
+fixed values of treatment corresponding to nobody having treatment
+and everyone having treatment, respcetively. Variable Z is the continuous
+covariate of interest and m0 is the value of the monotone function of
+the covariate of interest (Z) evaluated at Z. Variables C1 and C2 are
+a discrete baseline covariate and a continuous baseline covariate,
+respectively.
 
 ** Estimation
 
-Estimate counterfactual 30-days survival probabilities
-with and without shape constraint
+We estimate the counterfactual 30-day survival probabilities (had all
+versus no one received bystander CPR) by calling the function
+=doMSMwithSC= with arguments:
+- =outcome= outcome variable
+- =treatment= treatment variable
+- =smooth= smooth expression of the monotone function of the covariate of interest
+- =covariates= vector of baseline covariates
+- =Gformula= formula for the auxiliary outcome regression model used in
+  g-formula approach
+- =data= dataset
+- =grid= grid of values for the continuous covariate of interest
+
+The following procedures with and without constraints have been
+implemented in the function =doMSMwithSC=:
+- Marginal structural models with monotonicity constraints (proposed
+  method)
+- Unconstrained g-formula
+
+The function =doMSMwithSC= fits a logistic marginal structural model specified by the arguments =outcome=,
+=treatment=, and =smooth= (i.e., =outcome~treatment+smooth=). The
+estimation of the MSM requires an auxiliary regression model. We have
+implemented a logistic regression model as the auxiliary regression
+model. The auxiliary model is specified by the arguments =outcome=,
+=treatment=, =smooth= and =covariates= (i.e.,
+=outcome~treatment+smooth+covariates=). Note that both logistic regression models are fit
+by the function =scam= from =R= package =scam= to allow shape
+constraints in the smooth term =smooth=.
+
+To investigate the sensitivity of the proposed method to the selection
+of auxiliary regression model, we also implemented a different logistic
+regression model as the auxiliary model. In particular, a model
+including the correct functional form of the covariate of interest
+(saved as a variable =m0= in the dataset) instead of the smooth term (i.e.,
+=outcome~treatment+m0+covariates=).
+
+The unconstrained g-formula approac also requires specifying an
+auxiliary regression model. We have implemented a logistic regression
+model specified by the argument
+=Gformula=.\\
+
+The output from the function call gives the estimates across
+ambulance response time-points specified in the argument =grid=:
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R  :results output   :exports both  :session *R* :cache yes  
+#+BEGIN_SRC R  :results output   :exports both  :session *R* :cache yes
 est <- doMSMwithSC(outcome="Y",
                    treatment="A",
                    covariates=c("C1","C2"),
-                   exposure="s(Z,bs='mpd',k=25,m=2)",
+                   smooth="s(Z,bs='mpd',k=25,m=2)",
                    Gformula="Y~A+C1+C2+rms:::rcs(Z,c(5,10,15,20))",
                    grid=0:20,
                    data=d)
@@ -113,25 +178,27 @@ x=summary(est)
 head(x)
 #+END_SRC
 
-#+RESULTS[(2022-05-10 15:26:47) 8cadd41e927b9dcef052dcc430aabcbcc3ff8ccf]:
-:       Method Exposure Survival.treated Survival.untreated
-: 1: B_splines        0        0.6059858          0.2174622
-: 2: B_splines        1        0.5662081          0.1908355
-: 3: B_splines        2        0.5255586          0.1667743
-: 4: B_splines        3        0.4845676          0.1452024
-: 5: B_splines        4        0.4437832          0.1259989
-: 6: B_splines        5        0.4037427          0.1090112
+#+RESULTS[<2022-08-27 12:52:28> c73c717663083ee314b1a3b5f8b89fac13b74c6a]:
+:       Method Covariate Survival.treated Survival.untreated
+: 1: B_splines         0        0.6059858          0.2174622
+: 2: B_splines         1        0.5662081          0.1908355
+: 3: B_splines         2        0.5255586          0.1667743
+: 4: B_splines         3        0.4845676          0.1452024
+: 5: B_splines         4        0.4437832          0.1259989
+: 6: B_splines         5        0.4037427          0.1090112
+
 
 ** Visual
 
-Plot the estimated counterfactual 30-days survival probabilities:
+To plot the estimated counterfactual 30-days survival probabilities
+we can call the function =autoplot=:
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R  :results none :exports code  :session *R* :cache yes
 autoplot(est,estimator="B_splines")
 #+END_SRC
 
-* Simulation study 
+* Simulation study
 
 ** Data generating mechanism
 
@@ -156,31 +223,6 @@ head(d1)
 : 4  1 68.26281  8.4890214 1  0  1      0      0 2.2501355 0
 : 5  1 66.24554  8.8481369 0  0  1      0      1 2.2872823 0
 : 6  0 66.49033  0.8152458 1  0  1      0      1 0.5962209 1
-
-We simulate a covariate sex (=C1=) from a Bernoulli distribution, a covariate age (=C2=)
-from a Gaussian distribution and a continuous covariate ambulance
-response time (=Z=). By setting the argument =unif=FALSE= will draw
-the ambulance response time from a Gamma distribution. Thereby, the effect of sex and
-age on ambulance response time is specified by the argument
-=gamma=. Note that by setting =gamma <- c(0,0,0)= we assume ambulance response time is independent of sex and age.\\
-
-A binary observed bystander CPR status (=A=) is drawn following a logistic
-regression model with additive effects of age and sex as specified by
-the argument =alpha=.\\
-
-Another logistic
-regression model is used to draw the outcome of 30-day survival. The covariate effects on the 30-day survival are controlled by
-including additive effects of sex and age and a smooth monotone
-decreasing function of the ambulance response time (=m0=) as specified by the
-argument =beta=.\\
-
-In addition, we generate two deterministic variables =A1= and =A0=
-that represent interventions where eveyone in the population receives
-bystander CPR and nobody in the population received bystander CPR,
-respectively. Similarly, we generate two counterfactual outcomes
-=set.Y1= and =set.Y0= that correspond to
-counterfactual 30-day survival status that we would see under
-intervention =A1= and =A0=, respectively.\\
 
 
 To create a simulated data for setting 2, we can run the following code:
@@ -208,143 +250,6 @@ head(d2)
 The only difference compared to setting 1 is that the ambulance
 response time is now generated from a uniform distribution as
 specified by argument =unif=TRUE=.
-
-** Estimation of counterfactual 30-day survival probabilities
-In our simulation study we estimate the counterfactual 30-day survival
-probabilities with 2 different estimation approaches:
-- Marginal structural models with monotonicity constraints (proposed
-  method)
-- Unconstrained g-formula
-
-We have implemented both procedures in the function doMSMwithSC.  We
-can use it on the simulated dataset by evaluating the following code
-block:
-
-#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R :exports both :results output   :session *R* :cache yes
-## Convert exposure variable to a factor for modelling
-d1$A <- factor(d1$A)
-## Estimate counterfactual 30-days survival probabilities
-est <- doMSMwithSC(outcome="Y",
-                   treatment="A",
-                   covariates=c("C1","C2"),
-                   exposure="s(Z,bs='mpd',k=25,m=2)",
-                   Gformula="Y~A+C1+C2+rms:::rcs(Z,c(5,10,15,20))",
-                   grid=0:20,
-                   data=d1)
-head(summary(est))
-#+END_SRC
-
-:       Method Exposure Survival.treated Survival.untreated
-: 1: B_splines        0        0.6059858          0.2174622
-: 2: B_splines        1        0.5662081          0.1908355
-: 3: B_splines        2        0.5255586          0.1667743
-: 4: B_splines        3        0.4845676          0.1452024
-: 5: B_splines        4        0.4437832          0.1259989
-: 6: B_splines        5        0.4037427          0.1090112
-
-
-Both methods require an auxiliary regression model. For the proposed
-estimation approach, we use a logistic regression model with penalized
-B-splines as specified by the argument =exposure=. Note that this
-logistic regression model is fit by the function =scam= from =R=
-package =scam=. 
-
-To investigate the sensitivity of the proposed method to the selection
-of auxiliary regression model, we also employ a different logistic
-regression model as the auxiliary model. In particular, a model
-including the correct functional form of ambulance response time
-(saved as a variable =m0= in the dataset) instead of B-splines. This
-model is specified by the argument =formula3=.
-
-For the unconstrained g-formula, we use another logistic regression
-model with restricted cubic spline as specified by the argument
-=formula2=.\\
-
-Finally, for the proposed estimation approach we also need to specify
-the marginal structural model. We use a logistic regression model
-specified in the argument =y.model=.\\
-
-The argument =data= is used to specify the data and the argument =z=
-is used to specify the values of ambulance response time for which the
-counterfactual 30-day survival probabilities will be predicted.
-
-The output from the function call gives the estimates across specified
-ambulance response time-points:
-
-#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R :exports both :results output  :session *R* :cache yes
-summary(est)
-#+END_SRC
-
-#+begin_example
-         Method Exposure Survival.treated Survival.untreated
- 1:   B_splines        0       0.60598576         0.21746215
- 2:   B_splines        1       0.56620806         0.19083551
- 3:   B_splines        2       0.52555863         0.16677429
- 4:   B_splines        3       0.48456762         0.14520240
- 5:   B_splines        4       0.44378321         0.12599886
- 6:   B_splines        5       0.40374266         0.10901117
- 7:   B_splines        6       0.36494446         0.09406733
- 8:   B_splines        7       0.32782479         0.08098588
- 9:   B_splines        8       0.29274030         0.06958388
-10:   B_splines        9       0.25995850         0.05968292
-11:   B_splines       10       0.22965571         0.05111337
-12:   B_splines       11       0.20192146         0.04371707
-13:   B_splines       12       0.17676799         0.03734892
-14:   B_splines       13       0.15414272         0.03187749
-15:   B_splines       14       0.13394220         0.02718496
-16:   B_splines       15       0.11602586         0.02316666
-17:   B_splines       16       0.10022869         0.01973028
-18:   B_splines       17       0.08637219         0.01679487
-19:   B_splines       18       0.07427321         0.01428981
-20:   B_splines       19       0.06375079         0.01215378
-21:   B_splines       20       0.05463112         0.01033369
-22: known_shape        0       0.66962083         0.26369760
-23: known_shape        1       0.61290802         0.21861496
-24: known_shape        2       0.55377443         0.17984829
-25: known_shape        3       0.49501230         0.14763649
-26: known_shape        4       0.43961255         0.12174126
-27: known_shape        5       0.38995905         0.10148860
-28: known_shape        6       0.34682804         0.08577729
-29: known_shape        7       0.31004540         0.07356220
-30: known_shape        8       0.27874541         0.06392399
-31: known_shape        9       0.25197375         0.05617750
-32: known_shape       10       0.22885748         0.04982723
-33: known_shape       11       0.20868553         0.04452425
-34: known_shape       12       0.19090047         0.04002211
-35: known_shape       13       0.17507507         0.03614556
-36: known_shape       14       0.16087577         0.03276645
-37: known_shape       15       0.14804987         0.02979151
-38: known_shape       16       0.13639620         0.02714984
-39: known_shape       17       0.12575989         0.02478815
-40: known_shape       18       0.11601555         0.02266464
-41: known_shape       19       0.10706439         0.02074691
-42: known_shape       20       0.09882604         0.01900909
-43:       Gform        0       0.58573566         0.20283944
-44:       Gform        1       0.55139977         0.18111232
-45:       Gform        2       0.51656807         0.16123885
-46:       Gform        3       0.48157488         0.14316231
-47:       Gform        4       0.44676081         0.12680376
-48:       Gform        5       0.41245953         0.11206809
-49:       Gform        6       0.37862742         0.09871378
-50:       Gform        7       0.34387114         0.08607203
-51:       Gform        8       0.30680947         0.07365597
-52:       Gform        9       0.26668957         0.06130856
-53:       Gform       10       0.22366055         0.04917709
-54:       Gform       11       0.17991330         0.03787883
-55:       Gform       12       0.14101580         0.02860833
-56:       Gform       13       0.11046608         0.02178699
-57:       Gform       14       0.08899786         0.01721597
-58:       Gform       15       0.07597316         0.01452720
-59:       Gform       16       0.07025098         0.01336540
-60:       Gform       17       0.06974481         0.01326320
-61:       Gform       18       0.07304276         0.01393077
-62:       Gform       19       0.07923693         0.01519514
-63:       Gform       20       0.08742492         0.01688794
-         Method Exposure Survival.treated Survival.untreated
-#+end_example
-
 
 ** True counterfactual 30-day survival probabilities
 
@@ -394,62 +299,15 @@ The code of the full simulation study is in the following =R=-script:
 source("./Code/RunSimulations.R")
 #+END_SRC
 
-For the purpose of illustration, we show the results from setting one
-across 10 simulations for sample size 500. 
+The results from the simulation study can be found in the folder
+="./Results"= .
 
-To run the simulations we use the function =sim.loop.MSM=. This
-function requires the specification of number of simulations =s=. For
-each simulation, data  are generated with the
-function =generate_data=.
-
-The argument=mccores= controls the number of cores used
-for parallel computation.
+The figures presented in the manuscript can be found
+in the folder ="./Figures"= and the code producing the figures is in
+the following =R=-script:
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R :exports code :results none  :session *R* :cache yes
-## Set effect size for data generation
-gamma <- c(0,0,0)
-alpha <- c(1.5,0.1,-0.03)
-beta <- c(2,1.3,-0.9,0.2,-0.04)
-## Simulations
-## Number of simulations
-s <- 10
-n <- 500
-## Generate seeds for data generation
-set.seed(12)
-seeds <- sample(1:10000000,s,replace=FALSE)
-## Run the simulations
-out <- sim.loop.MSM(n=n,s=s,seeds=seeds,alpha=alpha,beta=beta,gamma=gamma,unif=TRUE,outcome.formula="Y~A+C1+C2+s(Z,bs='mpd',k=25,m=2)",formula3="Y~A+C1+C2+m0",formula2="Y~A+C1+C2+rms:::rcs(Z,c(5,10,15,20))",y.formula="Y~A+s(Z,bs='mpd',k=25,m=2)",mccores=1,z=0:20)
+#+BEGIN_SRC R :eval no :results none :exports code  :session *R* :cache yes
+source("./Code/PlotResults.R")
 #+END_SRC
-
-
-
-The output from the function =sim.loop.MSM= is a list a list with
-length =s=. Each element of the list contains the estimated
-counterfactual 30-day survival probabilities. To show the results, we
-can use function =plot.simloop=:
-
-#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R :results graphics :file "./figures/example-fig.png" :exports code  :session *R* :cache yes
-output <- list(out=out,truth=truth)
-class(output) <- "simloop"
-plot(output,n=500,subtitle=c("Bystander CPR","No bystander CPR"))
-#+END_SRC
-
-
-[[file:./figures/example-fig.png]]
-
-The function =plot.simloop= takes an argument =which= that can be used to
-specify what kind of summary of the simulation results should be
-displayed. The argument =which= can take values from =raw= (predicted
-probabilities), =bias= (bias across simulations), and =variance=
-(variance across simulations).
-
-
-#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R :results graphics :file "./figures/example-fig-bias.png" :exports code  :session *R* :cache yes
-plot(output,which="bias",ylim1=c(-0.2,0.1),ylim2=c(-0.2,0.1),n=500,subtitle=c("Bystander CPR","No bystander CPR"))
-#+END_SRC
-
-[[file:./figures/example-fig-bias.png]]
 

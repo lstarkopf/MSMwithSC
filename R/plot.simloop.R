@@ -43,7 +43,6 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 }
 
 plot.simloop <- function(out,which="raw",ylim1=c(0,0.75),ylim2=c(0,0.45),n=5000,labs=c("A)","B)"),subtitle){
-    ## browser()
     res <- summary(out,times=0:20,which=which)
     if (which=="raw"){
         d <- res[CPR=="Bystander CPR",.SD[1],by=.(z,Method)]
@@ -51,13 +50,13 @@ plot.simloop <- function(out,which="raw",ylim1=c(0,0.75),ylim2=c(0,0.45),n=5000,
             geom_line(aes(x=z,y=truth,linetype="True value"),size=0.5,color="black",show.legend=FALSE)+
                 geom_line(aes(x=z,y=mean.value,group=Method,linetype=Method),size=0.5,color="black",show.legend=TRUE)+
                     xlab("Ambulance response time (minutes)")+ylab("Counterfactual 30-day survival")+ggtitle(labs[1],subtitle=paste0(subtitle[1],", n=",n))+
-                        scale_linetype_manual(values=c("longdash","twodash","dotted","solid"))+scale_y_continuous(labels=percent,limits=ylim1)+theme_4()+guides(linetype=guide_legend(ncol=1))+guides(color=FALSE,fill=FALSE)+theme(legend.position=c(0.7,0.8))
+                        scale_linetype_manual(values=c("longdash","twodash","dotted","solid"))+scale_y_continuous(labels=percent,limits=ylim1)+theme_4()+guides(linetype=guide_legend(ncol=1))+guides(color="none",fill="none")+theme(legend.position=c(0.7,0.8))
         d <- res[CPR=="No bystander CPR",.SD[1],by=.(z,Method)]
         p2 <- ggplot(d) +geom_ribbon(aes(x=z,ymin=min.value,ymax=max.value,group=Method,fill=Method),position=position_dodge(width=0),alpha=0.2,linetype=0,show.legend=FALSE)+scale_fill_grey(start=0.8,end=0.2)+
             geom_line(aes(x=z,y=truth,group=1,linetype="True value"),size=0.5,color="black",show.legend=FALSE)+
                 geom_line(aes(x=z,y=mean.value,group=Method,linetype=Method),size=0.5,color="black",show.legend=TRUE)+
                     xlab("Ambulance response time (minutes)")+ylab("Counterfactual 30-day survival")+ggtitle(labs[2],subtitle=paste0(subtitle[2],", n=",n))+
-                        scale_linetype_manual(values=c("longdash","twodash","dotted","solid"))+scale_y_continuous(limits=ylim2,labels=percent)+theme_4()+guides(linetype=guide_legend(ncol=1))+guides(color=FALSE,fill=FALSE)+theme(legend.position=c(0.7,0.8))
+                        scale_linetype_manual(values=c("longdash","twodash","dotted","solid"))+scale_y_continuous(limits=ylim2,labels=percent)+theme_4()+guides(linetype=guide_legend(ncol=1))+guides(color="none",fill="none")+theme(legend.position=c(0.7,0.8))
         return(multiplot(p1,p2,cols=2))
     }
     if (which=="bias"){
@@ -65,12 +64,12 @@ plot.simloop <- function(out,which="raw",ylim1=c(0,0.75),ylim2=c(0,0.45),n=5000,
         p1 <- ggplot(d) +geom_line(aes(x=z,y=bias,group=Method,linetype=Method),show.legend=TRUE)+
             geom_hline(yintercept=0,color="gray90",size=0.5)+
                     xlab("Ambulance response time (minutes)")+ylab("Bias")+ggtitle(labs[1],subtitle=paste0(subtitle[1],", n=",n))+
-                        scale_linetype_manual(values=c("longdash","twodash","dotted"))+scale_x_discrete(breaks=c(0,5,10,15,20))+scale_y_continuous(labels=percent,limits=ylim1)+theme_4()+guides(linetype=guide_legend(ncol=1))+guides(color=FALSE,fill=FALSE)+theme(legend.position=c(0.5,0.2))
+                        scale_linetype_manual(values=c("longdash","twodash","dotted"))+scale_x_discrete(breaks=c(0,5,10,15,20))+scale_y_continuous(labels=percent,limits=ylim1)+theme_4()+guides(linetype=guide_legend(ncol=1))+guides(color="none",fill="none")+theme(legend.position=c(0.5,0.2))
         d <- res$bias.no
         p2 <- ggplot(d) +geom_line(aes(x=z,y=bias,group=Method,linetype=Method),show.legend=TRUE)+
             geom_hline(yintercept=0,color="gray90",size=0.5)+
                     xlab("Ambulance response time (minutes)")+ylab("Bias")+ggtitle(labs[2],subtitle=paste0(subtitle[2],", n=",n))+
-                        scale_linetype_manual(values=c("longdash","twodash","dotted"))+scale_x_discrete(breaks=c(0,5,10,15,20))+scale_y_continuous(limits=ylim2,labels=percent)+theme_4()+guides(linetype=guide_legend(ncol=1))+guides(color=FALSE,fill=FALSE)+theme(legend.position=c(0.5,0.2))
+                        scale_linetype_manual(values=c("longdash","twodash","dotted"))+scale_x_discrete(breaks=c(0,5,10,15,20))+scale_y_continuous(limits=ylim2,labels=percent)+theme_4()+guides(linetype=guide_legend(ncol=1))+guides(color="none",fill="none")+theme(legend.position=c(0.5,0.2))
         return(multiplot(p1,p2,cols=2))
     }
     if(which=="variance"){
@@ -78,12 +77,12 @@ plot.simloop <- function(out,which="raw",ylim1=c(0,0.75),ylim2=c(0,0.45),n=5000,
                 p1 <- ggplot(d) +geom_line(aes(x=z,y=var,group=Method,linetype=Method),show.legend=TRUE)+
             #geom_hline(yintercept=0,color="gray90",size=0.5)+
                     xlab("Ambulance response time (minutes)")+ylab("Variance")+ggtitle(labs[1],subtitle=paste0(subtitle[1],", n=",n))+
-                        scale_linetype_manual(values=c("longdash","twodash","dotted"))+scale_x_discrete(breaks=c(0,5,10,15,20))+scale_y_continuous(labels=percent,limits=ylim1)+theme_4()+guides(linetype=guide_legend(ncol=1))+guides(color=FALSE,fill=FALSE)+theme(legend.position=c(0.5,0.8))
+                        scale_linetype_manual(values=c("longdash","twodash","dotted"))+scale_x_discrete(breaks=c(0,5,10,15,20))+scale_y_continuous(labels=percent,limits=ylim1)+theme_4()+guides(linetype=guide_legend(ncol=1))+guides(color="none",fill="none")+theme(legend.position=c(0.5,0.8))
                 d <- res$var.no
                 p2 <- ggplot(d) +geom_line(aes(x=z,y=var,group=Method,linetype=Method),show.legend=TRUE)+
             #geom_hline(yintercept=0,color="gray90",size=0.5)+
                     xlab("Ambulance response time (minutes)")+ylab("Variance")+ggtitle(labs[2],subtitle=paste0(subtitle[2],", n=",n))+
-                        scale_linetype_manual(values=c("longdash","twodash","dotted"))+scale_x_discrete(breaks=c(0,5,10,15,20))+scale_y_continuous(limits=ylim2,labels=percent)+theme_4()+guides(linetype=guide_legend(ncol=1))+guides(color=FALSE,fill=FALSE)+theme(legend.position=c(0.5,0.8))
+                        scale_linetype_manual(values=c("longdash","twodash","dotted"))+scale_x_discrete(breaks=c(0,5,10,15,20))+scale_y_continuous(limits=ylim2,labels=percent)+theme_4()+guides(linetype=guide_legend(ncol=1))+guides(color="none",fill="none")+theme(legend.position=c(0.5,0.8))
         return(multiplot(p1,p2,cols=2))
             }
 }

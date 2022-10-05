@@ -1,30 +1,30 @@
-### print.MSMwithSC.R --- 
+### summary.MSMwithSC.R ---
 #----------------------------------------------------------------------
 ## Author: Thomas Alexander Gerds
-## Created: May 10 2022 (09:09) 
-## Version: 
-## Last-Updated: May 10 2022 (12:22) 
+## Created: May 10 2022 (09:09)
+## Version:
+## Last-Updated: May 10 2022 (12:22)
 ##           By: Thomas Alexander Gerds
 ##     Update #: 5
 #----------------------------------------------------------------------
-## 
-### Commentary: 
-## 
+##
+### Commentary:
+##
 ### Change Log:
 #----------------------------------------------------------------------
-## 
+##
 ### Code:
-print.MSMwithSC <- function(x,...){
-    tab = do.call("rbind",lapply(names(x)[-length(x)],function(method){
+summary.MSMwithSC <- function(x,print=FALSE,...){
+    tab = do.call("rbind",lapply(names(x)[1:(length(x)-2)],function(method){
         data.table(Method = method,
-                   Exposure = eval(x$call[["grid"]]),
+                   Covariate = eval(x$grid),
                    Survival.treated = x[[method]][["surv.yes"]],
                    Survival.untreated = x[[method]][["surv.no"]])
     }))
-    print(tab)
-    invisible(tab)
+    if (print){print(tab)}
+    tab
 }
 
 
 ######################################################################
-### print.MSMwithSC.R ends here
+### summary.MSMwithSC.R ends here

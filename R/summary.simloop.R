@@ -1,10 +1,9 @@
 summary.simloop <- function(x,which="raw",times=c(0:20)){
-    ## browser()
     s <- length(x$out)
     if (which=="raw"){
-        scam.mes.yes <- data.table(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$SCAM$surv.yes)))
-        scam2.mes.yes <- data.table(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$SCAM2$surv.yes)))
-        gform.mes.yes <- data.table(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$Gform$surv.yes)))
+        scam.mes.yes <- data.table(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="B_splines",Survival.treated])))
+        scam2.mes.yes <- data.table(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="known_shape",Survival.treated])))
+        gform.mes.yes <- data.table(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="Gform",Survival.treated])))
         s1 <- ncol(scam.mes.yes)
         s2 <- ncol(gform.mes.yes)
         s3 <- ncol(scam2.mes.yes)
@@ -28,9 +27,9 @@ summary.simloop <- function(x,which="raw",times=c(0:20)){
         res.yes[,min.value:=quantile(value,probs=0.25),by=.(z,Method)]
         res.yes[,max.value:=quantile(value,probs=0.75),by=.(z,Method)]
         res.yes[,CPR:=factor("Bystander CPR",levels=c("Bystander CPR","No bystander CPR"))]
-        scam.mes.no <- data.table(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$SCAM$surv.no)))
-        scam2.mes.no <- data.table(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$SCAM2$surv.no)))
-        gform.mes.no <- data.table(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$Gform$surv.no)))
+        scam.mes.no <- data.table(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="B_splines",Survival.untreated])))
+        scam2.mes.no <- data.table(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="known_shape",Survival.untreated])))
+        gform.mes.no <- data.table(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="Gform",Survival.untreated])))
         setnames(scam.mes.no,paste0(c(1:s1)))
         setnames(scam2.mes.no,paste0(c(1:s3)))
         setnames(gform.mes.no,paste0(c(1:s2)))
@@ -54,9 +53,9 @@ summary.simloop <- function(x,which="raw",times=c(0:20)){
         res <- rbind(res.yes,res.no)
         return(res)
     } else if (which=="bias"){
-          bias.sc.yes <- data.table(rowMeans(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$SCAM$surv.yes-x$truth$pp.yes)),na.rm=TRUE))
-          bias.sc2.yes <- data.table(rowMeans(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$SCAM2$surv.yes-x$truth$pp.yes)),na.rm=TRUE))
-          bias.gf.yes <- data.table(rowMeans(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$Gform$surv.yes-x$truth$pp.yes)),na.rm=TRUE))
+          bias.sc.yes <- data.table(rowMeans(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="B_splines",Survival.treated]-x$truth$pp.yes)),na.rm=TRUE))
+          bias.sc2.yes <- data.table(rowMeans(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="known_shape",Survival.treated]-x$truth$pp.yes)),na.rm=TRUE))
+          bias.gf.yes <- data.table(rowMeans(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="Gform",Survival.treated]-x$truth$pp.yes)),na.rm=TRUE))
           setnames(bias.sc.yes,"bias")
           setnames(bias.sc2.yes,"bias")
           setnames(bias.gf.yes,"bias")
@@ -67,9 +66,9 @@ summary.simloop <- function(x,which="raw",times=c(0:20)){
           bias.sc2.yes[,Method:="MSM with constraints (function known)"]
           bias.gf.yes[,Method:="G-formula"]
           bias.yes <- rbind(bias.sc.yes,bias.sc2.yes,bias.gf.yes)
-          bias.sc.no <- data.table(rowMeans(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$SCAM$surv.no-x$truth$pp.no)),na.rm=TRUE))
-          bias.sc2.no <- data.table(rowMeans(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$SCAM2$surv.no-x$truth$pp.no)),na.rm=TRUE))
-          bias.gf.no <- data.table(rowMeans(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$Gform$surv.no-x$truth$pp.no)),na.rm=TRUE))
+          bias.sc.no <- data.table(rowMeans(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="B_splines",Survival.untreated]-x$truth$pp.no)),na.rm=TRUE))
+          bias.sc2.no <- data.table(rowMeans(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="known_shape",Survival.untreated]-x$truth$pp.no)),na.rm=TRUE))
+          bias.gf.no <- data.table(rowMeans(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="Gform",Survival.untreated]-x$truth$pp.no)),na.rm=TRUE))
           setnames(bias.sc.no,"bias")
           setnames(bias.sc2.no,"bias")
           setnames(bias.gf.no,"bias")
@@ -82,9 +81,9 @@ summary.simloop <- function(x,which="raw",times=c(0:20)){
           bias.no <- rbind(bias.sc.no,bias.sc2.no,bias.gf.no)
           return(list(bias.yes=bias.yes,bias.no=bias.no))
       } else if (which=="variance"){
-            var.yes <- data.table(apply(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$SCAM$surv.yes)),1,var))
-            var2.yes <- data.table(apply(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$Gform$surv.yes)),1,var))
-            var3.yes <- data.table(apply(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$SCAM2$surv.yes)),1,var))
+            var.yes <- data.table(apply(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="B_splines",Survival.treated])),1,var))
+            var2.yes <- data.table(apply(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="known_shape",Survival.treated])),1,var))
+            var3.yes <- data.table(apply(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="Gform",Survival.treated])),1,var))
             setnames(var.yes,"var")
             setnames(var2.yes,"var")
             setnames(var3.yes,"var")
@@ -95,9 +94,9 @@ summary.simloop <- function(x,which="raw",times=c(0:20)){
             var3.yes[,Method:="MSM with constraints (function known)"]
             var2.yes[,Method:="G-formula"]
             var.yes <- rbind(var.yes,var3.yes,var2.yes)
-            var.no <- data.table(apply(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$SCAM$surv.no)),1,var))
-            var2.no <- data.table(apply(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$Gform$surv.no)),1,var))
-            var3.no <- data.table(apply(do.call("cbind",lapply(1:s,function(y)x$out[[y]]$SCAM2$surv.no)),1,var))
+            var.no <- data.table(apply(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="B_splines",Survival.untreated])),1,var))
+            var2.no <- data.table(apply(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="known_shape",Survival.untreated])),1,var))
+            var3.no <- data.table(apply(do.call("cbind",lapply(1:s,function(y)x$out[[y]][Method=="Gform",Survival.untreated])),1,var))
             setnames(var.no,"var")
             setnames(var2.no,"var")
             setnames(var3.no,"var")

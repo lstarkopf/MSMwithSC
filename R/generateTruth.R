@@ -1,25 +1,25 @@
-### generateTruth.R --- 
+### generateTruth.R ---
 #----------------------------------------------------------------------
 ## Author: Thomas Alexander Gerds
-## Created: May 10 2022 (12:59) 
-## Version: 
-## Last-Updated: May 10 2022 (15:24) 
-##           By: Thomas Alexander Gerds
-##     Update #: 2
+## Created: May 10 2022 (12:59)
+## Version:
+## Last-Updated: August 27 2022 (15:16)
+##           By: Liis Starkopf
+##     Update #: 3
 #----------------------------------------------------------------------
-## 
-### Commentary: 
-## 
-### Change Log:
+##
+### Commentary:
+##
+### Change Log: added parameter unif
 #----------------------------------------------------------------------
-## 
+##
 ### Code:
 
 ## Set effect size for data generation
-generateTruth <- function(alpha,beta,gamma,seed,sample.size){
+generateTruth <- function(alpha,beta,gamma,seed,sample.size,unif=FALSE){
     ## Generate data (with fixed seed) for setting 1
     set.seed(seed)
-    d <- generate_data(n=sample.size,alpha=alpha,beta=beta,gamma=gamma,unif=FALSE)
+    d <- generate_data(n=sample.size,alpha=alpha,beta=beta,gamma=gamma,unif=unif)
     ## Counterfactual data under intervention where everybody gets bystander CPR
     d1 <- d[,c("C1","C2","Z","m0","A1","set.Y1")]
     ## Counterfactual data under intervention where nobody gets bystander CPR
